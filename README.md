@@ -1,2 +1,4 @@
 # neural_networks
-Implement nenural network on C++, using stl
+Nenural network implementation on C++, using stl, and simple to use
+
+Support for a while only classic neural network with samples
