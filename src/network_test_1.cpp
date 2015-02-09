@@ -6,6 +6,7 @@
 // Description : Hello World in C++, Ansi-style
 //============================================================================
 
+#include "network_by_mnist_images.h"
 #include "network_by_images.h"
 #include "network_by_and.h"
 #include "network_by_numeric_prediction_1.h"
@@ -15,8 +16,10 @@ using namespace std;
 
 int main()
 {
-	train_network_by_images();
-	test_network_by_images();
+	train_network_by_mnist_images();
+
+//	train_network_by_images();
+//	test_network_by_images();
 
 //	train_network_by_and();
 //	test_network_by_and();
