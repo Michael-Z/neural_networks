@@ -21,8 +21,8 @@ int main()
 //	train_network_by_images();
 //	test_network_by_images();
 
-//	train_network_by_and();
-//	test_network_by_and();
+	train_network_by_and();
+	test_network_by_and();
 
 //	train_network_by_numeric_prediction_1();
 //	test_network_by_numeric_prediction_1();
