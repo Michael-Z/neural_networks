@@ -52,7 +52,7 @@ void train_network_by_mnist_images()
 
 	double error_threshold = 1e-4;
 
-	double relativeErrorTrain = network.Learn( trainData_v, error_threshold, 100 );
+	double relativeErrorTrain = network.Learn( trainData_v, error_threshold, 300 );
 	printf( "relativeErrorTrain=%f\n", relativeErrorTrain ); fflush( stdout );
 
 	network.save( network_filename );
@@ -88,35 +88,39 @@ void train_network_by_mnist_images()
 
 void test_network_by_mnist_images()
 {
-//	size_t width = 0, height = 0;
-//	getInputResolution( width, height );
-//	const unsigned int output_count = 26;
-//
-//	string filename = "network_mnist_images.net";
-//	CNetwork network( filename );
-//
-//	for( unsigned int file_i = 0 ; file_i < output_count ; file_i++ )
-//	{
-//		vector<double> test_input;
-//		getInputData( test_input, "./train_img/fangtasia-upper_%d.png_copy.png", file_i );
-//		dump( test_input, 72 );
-//
-//		vector<double> output_test;
-//		double relativeErrorTest = network.Test( test_input, output_test );
-//		dump( output_test, 72 );
-//		size_t max_index = 0;
-//		double max_value = 0.0;
-//		for( size_t output_i = 0 ; output_i < output_test.size() ; output_i++ )
-//		{
-//			if( max_value < output_test[output_i] )
-//			{
-//				max_value = output_test[output_i];
-//				max_index = output_i;
-//			}
-//		}
-//
-//		printf( "relativeErrorTest=%f, image_index=%d\n", relativeErrorTest, (int)max_index ); fflush( stdout );
-//	}
+	size_t width = 0, height = 0;
+	getInputResolution( width, height );
+	const unsigned int output_count = 10;
+
+	string filename = "network_mnist_images.net";
+	CNetwork network( filename );
+
+	vector<double> output_test;
+	for( unsigned int label_i = 0 ; label_i < output_count ; label_i++ )
+	{
+		vector<vector<double> > inputData_v;
+
+		getInputData( inputData_v, label_i );
+
+		vector<double> output_test;
+		size_t inputData_v_count = inputData_v.size();
+		for( size_t image_i = 0 ; image_i < inputData_v_count ; image_i++ )
+		{
+			double relativeErrorTest = network.Test( inputData_v[image_i], output_test );
+			dump( output_test, 72 );
+			size_t max_index = 0;
+			double max_value = 0.0;
+			for( size_t output_i = 0 ; output_i < output_test.size() ; output_i++ )
+			{
+				if( max_value < output_test[output_i] )
+				{
+					max_value = output_test[output_i];
+					max_index = output_i;
+				}
+			}
+			printf( "relativeErrorTest=%f, image_index=%d\n", relativeErrorTest, (int)max_index ); fflush( stdout );
+		}
+	}
 }
 
 #include "png++/png.hpp"
