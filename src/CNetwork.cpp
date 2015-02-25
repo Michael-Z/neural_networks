@@ -12,12 +12,12 @@
 #include <fstream>
 #include <sstream>
 
-CNetwork::CNetwork( CLayersConfiguration & sequence ): m_fromFile( false ), m_LearningRate( ETA ), m_LayersConfiguration( &sequence )
+CNetwork::CNetwork( CLayersConfiguration & sequence ): m_fromFile( false ), m_LearningRate( ETA ), m_LayersConfiguration( &sequence ), m_epochStateCallback( NULL )
 {
 	createNetwork();
 }
 
-CNetwork::CNetwork( string & filename ): m_fromFile( true ), m_LearningRate( ETA ), m_LayersConfiguration( NULL )
+CNetwork::CNetwork( string & filename ): m_fromFile( true ), m_LearningRate( ETA ), m_LayersConfiguration( NULL ), m_epochStateCallback( NULL )
 {
 	load( filename );
 }
@@ -131,8 +131,9 @@ double CNetwork::forward( vector<double> & inputData, vector<double> & outputDat
 		double error = outputData[neuron_i] - last_layer->getNeuron( neuron_i )->getOutput();
 		last_layer->getNeuron( neuron_i )->setError( error );
 
-		sum_square_error += ( error*error ) / 2;
+		sum_square_error += ( error*error );
 	}
+	sum_square_error /= 2;
 
 	double mean_square_error = sum_square_error / last_layer->getNeuronsCount();
 
@@ -198,7 +199,6 @@ void CNetwork::backpropagation()
 			size_t weights_count = weights.size();
 			for( size_t weight_i = 0 ; weight_i < weights_count ; weight_i++ )
 			{
-				size_t prev_layer_neuron_assoc_with_weight_i = weight_i - 1;
 				double inputForThisNeuron = 0.0;
 				if( weight_i == 0 )
 				{
@@ -206,6 +206,7 @@ void CNetwork::backpropagation()
 				}
 				else
 				{
+					size_t prev_layer_neuron_assoc_with_weight_i = weight_i - 1;
 					inputForThisNeuron = prevLayer->getNeuron( prev_layer_neuron_assoc_with_weight_i )->getOutput();
 				}
 
@@ -264,28 +265,37 @@ double CNetwork::Learn( vector<TrainingData> & trainData, double error_threshold
 	vector<double> errors_per_epoch( max_epoch, 0.0 );
 	double relativeError = 1000.0;
 	unsigned int epoch_i = 0;
-//	string network_filename( "network_and.net" );
+	EpochState epochState = { *m_LayersConfiguration, 0.0 };
 	for(  ; ( relativeError > error_threshold ) && epoch_i < max_epoch ; )
 	{
-		double squareErrorSum = 0;
+		double meanSquareErrorSum = 0;
 		for( size_t train_data_i = 0 ; train_data_i < train_data_count ; train_data_i++ )
 		{
 			vector<double> & inputs = trainData[train_data_i].input;
 			vector<double> & output = trainData[train_data_i].output;
 
 			{
-				squareErrorSum += forward( inputs, output );
+				meanSquareErrorSum += forward( inputs, output );
 				backpropagation();
+				epochState.squareErrorSum = meanSquareErrorSum;
 			}
 		}
 
-		errors_per_epoch[epoch_i] = sqrt(squareErrorSum / train_data_count);
+//		if( epoch_i % 10 )
+		{
+			if( m_epochStateCallback )
+			{
+				m_epochStateCallback( epochState );
+			}
+		}
+
+		errors_per_epoch[epoch_i] = sqrt(meanSquareErrorSum / train_data_count);
 
 		epoch_i++;
 
-		if( epoch_i % 2 == 0 )
+//		if( epoch_i % 2 == 0 )
 		{
-			relativeError = getRelativeError( errors_per_epoch, epoch_i );
+			relativeError = meanSquareErrorSum;//getRelativeError( errors_per_epoch, epoch_i );
 		}
 	}
 
@@ -435,9 +445,15 @@ bool CNetwork::load( string & filename )
 	return true;
 }
 
+void CNetwork::setEpochStateCallback( EpochStateCallback epochStateCallback )
+{
+	m_epochStateCallback = epochStateCallback;
+}
 
-
-
+void CNetwork::setLearnRate( double learnRate )
+{
+	m_LearningRate = learnRate;
+}
 
 
 
