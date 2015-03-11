@@ -11,6 +11,7 @@
 #include <cstdio>
 #include <fstream>
 #include <sstream>
+#include <algorithm>
 
 CNetwork::CNetwork( CLayersConfiguration & sequence ): m_fromFile( false ), m_LearningRate( ETA ), m_LayersConfiguration( &sequence ), m_epochStateCallback( NULL )
 {
@@ -455,7 +456,78 @@ void CNetwork::setLearnRate( double learnRate )
 	m_LearningRate = learnRate;
 }
 
+void CNetwork::reverse()
+{
+	CLayersConfiguration * prevLayersConfuration = m_LayersConfiguration;
+	vector<ILayer*> layers;
+	prevLayersConfuration->getLayers( layers );
 
+	size_t layers_count = layers.size();
+
+
+	vector<size_t> layers_sizes;
+
+	for( int layer_i = layers_count - 1 ; layer_i >= 0 ; layer_i-- )
+	{
+		size_t neurons_count = layers[layer_i]->getNeuronsCount();
+		layers_sizes.push_back( neurons_count );
+	}
+
+	vector<size_t> hidden_layers_sizes;
+	if( layers_count > 2 )
+	{
+		std::reverse( layers_sizes.begin(), layers_sizes.end() );
+		hidden_layers_sizes.assign( layers_sizes.begin() + 1, layers_sizes.begin() + layers_count - 1 );
+		std::reverse( layers_sizes.begin(), layers_sizes.end() );
+		int s = hidden_layers_sizes[0];
+	}
+
+	CLayersConfiguration * newLayersConfuration = new CLayersConfiguration( layers_sizes[0], layers_sizes[layers_count - 1], hidden_layers_sizes );
+
+	vector<ILayer*> newLayers;
+	vector<ILayer*> prevLayers;
+	newLayersConfuration->getLayers( newLayers );
+	prevLayersConfuration->getLayers( prevLayers );
+
+	layers_count = layers.size();
+
+	for( size_t new_layer_i = 1 ; new_layer_i < layers_count ; new_layer_i++ )
+	{
+		ILayer *newLayer = newLayers[new_layer_i];
+		ILayer *prevLayer = prevLayers[layers_count - new_layer_i];
+
+		size_t new_layer_neurons_count = newLayer->getNeuronsCount();
+
+		for( size_t new_layer_neuron_i = 0 ; new_layer_neuron_i < new_layer_neurons_count ; new_layer_neuron_i++ )
+		{
+			size_t prev_layer_neurons_count = prevLayer->getNeuronsCount();
+
+			vector<double> newWeights( prev_layer_neurons_count /*bias*/, 0.0 );
+
+			for( size_t prev_layer_neuron_i = 0 ; prev_layer_neuron_i < prev_layer_neurons_count ; prev_layer_neuron_i++ )
+			{
+				vector<double> prevWeights;
+				prevLayer->getNeuron( prev_layer_neuron_i )->getWeights( prevWeights );
+
+				size_t prev_layer_weights_count = prevWeights.size();
+
+				double new_layer_neuron_weight = prevWeights[new_layer_neuron_i + 1/*bias*/];
+				newWeights[prev_layer_neuron_i/*bias*/] = new_layer_neuron_weight;
+
+				/**Bias*/
+
+
+			}
+
+//			double bias = prevWeights[0/*bias*/];;
+//			newWeights[0] = bias;
+
+			newLayer->getNeuron(new_layer_neuron_i)->setWeights( newWeights );
+		}
+	}
+
+	m_LayersConfiguration = newLayersConfuration;
+}
 
 
 

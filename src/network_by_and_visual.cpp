@@ -365,22 +365,6 @@ static void object_file_save( ThreeDPoint & point )
 		file << "o Pilot.001" << endl << flush;
 	}
 
-//	size_t points_count = points.size();
-//	for( size_t point_i = 0 ; point_i < points_count ; point_i++ )
-	{
-//		ThreeDPoint & point = points[point_i];
-		file << "v " << point.x << " " << point.z << " " << point.y << endl;
-	}
-
-//	file << "usemtl None" << endl;
-//
-//	if( points_count > 5 )
-//	{
-//		for( size_t point_i = 1 ; point_i < ( points_count - 5 ) ; point_i++ )
-//		{
-//			file << "f " << point_i << " " << point_i + 1 << " " << point_i + 2 << " " << point_i + 3 << endl;
-//		}
-//	}
-
+	file << "v " << point.x << " " << point.z << " " << point.y << endl;
 }
 

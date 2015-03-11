@@ -88,8 +88,6 @@ void train_network_by_mnist_images()
 
 void test_network_by_mnist_images()
 {
-	size_t width = 0, height = 0;
-	getInputResolution( width, height );
 	const unsigned int output_count = 10;
 
 	string filename = "network_mnist_images.net";
@@ -144,6 +142,15 @@ void getInputResolution( size_t & width, size_t & height )
 	}
 }
 
+void getReversedInputData( vector<vector<double> > & all_inputs, int label )
+{
+	vector<double> input;
+	input.resize( 10, 0 );
+	input[ label ] = 1;
+
+	all_inputs.push_back( input );
+}
+
 void getInputData( vector<vector<double> > & all_inputs, int label )
 {
 	stringstream dir_name_stream;
@@ -176,6 +183,33 @@ void getInputData( vector<vector<double> > & all_inputs, int label )
 
 	}while(true);
 	closedir(dir_handle);
+}
+
+void savePng( string filename, vector<double> data, int width, int height )
+{
+	ofstream png_file( filename.c_str() );
+	if( true == png_file.is_open() )
+	{
+		png::writer<ofstream> writer(png_file);
+
+		writer.set_height( height );
+		writer.set_width( width );
+		writer.set_color_type( png::color_type_gray );
+		writer.set_bit_depth( 8 );
+		writer.write_info();
+		png::byte * row = new png::byte[width];
+		for( int row_i = 0 ; row_i < height ; row_i++ )
+		{
+
+			for( int col_i = 0 ; col_i < width ; col_i++ )
+			{
+				row[col_i] = data[row_i * width + col_i ] * 255;
+			}
+			writer.write_row( row );
+		}
+
+		png_file.close();
+	}
 }
 
 void getInputData( vector<double> & data, const char * file_name )
@@ -230,3 +264,39 @@ static void dump( vector<double> & input, unsigned int items_per_line )
 	file.close();
 }
 
+void test_network_reversed_by_mnist_images()
+{
+	string filename = "network_mnist_images.net";
+	CNetwork network( filename );
+
+	filename = "network_mnist_images_reversed.net";
+	network.reverse();
+	network.save( filename );
+
+	size_t width = 0, height = 0;
+	getInputResolution( width, height );
+
+	unsigned int test_samples_count = 10;
+
+	const unsigned int output_count = width * height;
+	const unsigned int input_count = test_samples_count;
+
+	vector<double> output_test;
+	for( unsigned int label_i = 0 ; label_i < test_samples_count ; label_i++ )
+	{
+		vector<vector<double> > inputData_v;
+
+		getReversedInputData( inputData_v, label_i );
+
+		vector<double> output_test;
+		size_t inputData_v_count = inputData_v.size();
+		for( size_t image_i = 0 ; image_i < inputData_v_count ; image_i++ )
+		{
+			double relativeErrorTest = network.Test( inputData_v[image_i], output_test );
+
+			stringstream sstr;
+			sstr << "./reverse_mnist_image_" << label_i << ".png" << flush;
+			savePng( sstr.str(), output_test, width, height );
+		}
+	}
+}

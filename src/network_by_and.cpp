@@ -7,6 +7,8 @@
 
 #include "network_by_and.h"
 #include <cstdio>
+#include <iostream>
+using namespace std;
 
 static void getTestTrainData( TrainingData & data, int index );
 static void dump( vector<double> & input );
@@ -33,9 +35,9 @@ void train_network_by_and()
 		getTestTrainData( trainData_v[file_i], file_i );
 	}
 
-	double error_threshold = 1e-5;
+	double error_threshold = 1e-7;
 
-	double relativeErrorTrain = network.Learn( trainData_v, error_threshold, 30000 );
+	double relativeErrorTrain = network.Learn( trainData_v, error_threshold, 3000000 );
 	printf( "relativeErrorTrain=%f\n", relativeErrorTrain ); fflush( stdout );
 	network.save( network_filename );
 
@@ -46,7 +48,6 @@ void train_network_by_and()
 
 		vector<double> output_test;
 		double relativeErrorTest = network.Test( test_input.input, output_test );
-		printf( "relativeErrorTest=%f\n", relativeErrorTest ); fflush( stdout );
 		dump( output_test );
 		double max_value = 0.0;
 		for( size_t output_i = 0 ; output_i < output_test.size() ; output_i++ )
@@ -57,7 +58,7 @@ void train_network_by_and()
 			}
 		}
 
-		printf( "relativeErrorTest=%f, value=%d\n", relativeErrorTest, (int)max_value ); fflush( stdout );
+		printf( "relativeErrorTest=%f, value=%f\n", relativeErrorTest, max_value ); fflush( stdout );
 	}
 }
 
@@ -82,15 +83,8 @@ void test_network_by_and()
 		double relativeErrorTest = network.Test( test_input.input, output_test );
 		dump( output_test );
 		double max_value = 0.0;
-		for( size_t output_i = 0 ; output_i < output_test.size() ; output_i++ )
-		{
-			if( max_value < output_test[output_i] )
-			{
-				max_value = output_test[output_i];
-			}
-		}
 
-		printf( "relativeErrorTest=%f, image_index=%d\n", relativeErrorTest, (int)max_value ); fflush( stdout );
+		printf( "relativeErrorTest=%f, out=%f\n", relativeErrorTest, output_test[0] ); fflush( stdout );
 	}
 }
 
@@ -107,6 +101,17 @@ void getTestTrainData( TrainingData & data, int index )
 	data.output.push_back( all_input_data[index][2] );
 }
 
+void getReverseTestTrainData( TrainingData & data, int index )
+{
+	static int all_input_data[][3] = { {0, 0, 0}, {0, 1, 0}, {1, 0, 0}, {1, 1, 1} };
+
+	data.input.resize( 1, 0 );
+	data.input[0] = all_input_data[index][2];
+
+	data.output.push_back( all_input_data[index][0] );
+	data.output.push_back( all_input_data[index][1] );
+}
+
 static void dump( vector<double> & input )
 {
 	ofstream file( "dump.txt", ios_base::app );
@@ -117,6 +122,36 @@ static void dump( vector<double> & input )
 	}
 	file << endl;
 	file.close();
+}
+
+void test_network_reverse()
+{
+	const unsigned int input_count = 2;
+	const unsigned int output_count = 1;
+	vector<size_t> hiddenLayers;
+	CLayersConfiguration sequence( input_count, output_count, hiddenLayers );
+
+	string filename = "network_and.net";
+	CNetwork network( filename );
+
+	network.reverse();
+
+	string filename_reversed = "network_and_reversed.net";
+	network.save( filename_reversed );
+
+	const size_t traind_data_count = 4;
+
+	for( unsigned int file_i = 0 ; file_i < traind_data_count ; file_i++ )
+	{
+		TrainingData test_input;
+		getReverseTestTrainData( test_input, file_i );
+
+		vector<double> output_test;
+		double relativeErrorTest = network.Test( test_input.input, output_test );
+		dump( output_test );
+
+		printf( "relativeErrorTest=%f, out1=%f, out2=%f\n", relativeErrorTest, output_test[0], output_test[1] ); fflush( stdout );
+	}
 }
 
 

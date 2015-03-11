@@ -12,6 +12,7 @@
 
 void train_network_by_mnist_images();
 void test_network_by_mnist_images();
+void test_network_reversed_by_mnist_images();
 
 
 #endif /* NETWORK_BY_MNIST_IMAGES_H_ */

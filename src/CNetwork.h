@@ -15,7 +15,7 @@
 using namespace std;
 
 #define BIASOUTPUT 1   //output for bias. It's always 1.
-#define ETA 0.1   //learning rate
+#define ETA 0.7   //learning rate
 
 struct TrainingData
 {
@@ -44,6 +44,7 @@ public:
 	bool load( string & filename );
 	void setEpochStateCallback( EpochStateCallback epochStateCallback );
 	void setLearnRate( double learnRate );
+	void reverse();
 private:
 	void createNetwork();
 	double forward( vector<double> & input, vector<double> & outputData );

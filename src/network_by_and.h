@@ -12,6 +12,7 @@
 
 void train_network_by_and();
 void test_network_by_and();
+void test_network_reverse();
 
 
 #endif /* network_by_and_H_ */

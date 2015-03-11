@@ -18,7 +18,7 @@ using namespace std;
 
 int main()
 {
-	train_network_by_mnist_images_visual();
+//	train_network_by_mnist_images_visual();
 //	train_network_by_and_visual();
 
 //	train_network_by_and_visual();
@@ -26,12 +26,14 @@ int main()
 
 //	train_network_by_mnist_images();
 //	test_network_by_mnist_images();
+	test_network_reversed_by_mnist_images();
 
 //	train_network_by_images();
 //	test_network_by_images();
 
 //	train_network_by_and();
 //	test_network_by_and();
+//	test_network_reverse();
 
 // //	train_network_by_numeric_prediction_1();
 // //	test_network_by_numeric_prediction_1();
