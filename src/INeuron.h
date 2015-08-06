@@ -19,8 +19,7 @@ public:
 
 	virtual double calculateDerivative( double value ) = 0;
 
-	virtual void getWeights( vector<double> & weights ) = 0;
-	virtual void setWeights( vector<double> & weights ) = 0;
+	virtual vector<double> & getWeights() = 0;
 
 	virtual double getDelta() = 0;
 	virtual void setDelta( double output ) = 0;

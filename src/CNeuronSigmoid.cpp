@@ -32,14 +32,9 @@ double CNeuronSigmoid::calculateDerivative( double value )
 	return activationFunc->Derivative( value );
 }
 
-void CNeuronSigmoid::getWeights( vector<double> & weights )
+vector<double> & CNeuronSigmoid::getWeights()
 {
-	weights = m_Weights;
-}
-
-void CNeuronSigmoid::setWeights( vector<double> & weights )
-{
-	m_Weights = weights;
+	return m_Weights;
 }
 
 double CNeuronSigmoid::getDelta()

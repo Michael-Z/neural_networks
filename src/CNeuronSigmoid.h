@@ -22,8 +22,7 @@ public:
 	double calculateDerivative( double value );
 
 
-	void getWeights( vector<double> & weights );
-	void setWeights( vector<double> & weights );
+	 vector<double> & getWeights();
 
 	double getDelta();
 	void setDelta( double delta );

@@ -101,8 +101,7 @@ double CNetwork::forward( vector<double> & inputData, vector<double> & outputDat
 		for( size_t neuron_i = 0 ; neuron_i < neurons_count ; neuron_i++ )
 		{
 			double multipliedSumWeight = 0.0;
-			vector<double> weights;
-			layer->getNeuron( neuron_i )->getWeights( weights );
+			vector<double> & weights = layer->getNeuron( neuron_i )->getWeights();
 			for( size_t prev_layer_neuron_i = 0 ; prev_layer_neuron_i <= prev_layer_neurons_count ; prev_layer_neuron_i++ )
 			{
 				double multiplied_weight = 0.0;
@@ -229,24 +228,24 @@ void CNetwork::backpropagation()
 	do
 	{
 
-		ILayer * curr_layer = layers[layer_i];
-		ILayer * prev_layer = layers[layer_i - 1];
-		size_t curr_layer_neurons_count = curr_layer->getNeuronsCount();
-		size_t prev_layer_neurons_count = prev_layer->getNeuronsCount();
+		ILayer * right_layer = layers[layer_i];
+		ILayer * left_layer = layers[layer_i - 1];
+		size_t right_layer_neurons_count = right_layer ->getNeuronsCount();
+		size_t left_layer_neurons_count = left_layer ->getNeuronsCount();
 
-		for( size_t neuron_i = 0 ; neuron_i < curr_layer_neurons_count ; neuron_i++ )
+		for( size_t neuron_i = 0 ; neuron_i < right_layer_neurons_count ; neuron_i++ )
 		{
 			double weightGradient = 0;
 			double outputDerivative = 0;
 			double errorDerivative = 0;
-			double output = curr_layer->getNeuron( neuron_i )->getOutput();
+			double output = right_layer ->getNeuron( neuron_i )->getOutput();
 			if( layer_i == layers_count - 1 )
 			{
-				errorDerivative = ( 2 * curr_layer->getNeuron( neuron_i )->getError() );
+				errorDerivative = ( 2 * right_layer ->getNeuron( neuron_i )->getError() );
 			}
 			else
 			{
-				errorDerivative = curr_layer->getNeuron( neuron_i )->getError();
+				errorDerivative = right_layer ->getNeuron( neuron_i )->getError();
 			}
 
 			outputDerivative = output * ( 1 - output );
@@ -258,14 +257,12 @@ void CNetwork::backpropagation()
 
 			for( size_t neuron_j = 0 ; neuron_j < prev_layer_neurons_count ; neuron_j++ )
 			{
-				double prev_output = prev_layer->getNeuron( neuron_j )->getOutput();
+				double prev_output = left_layer ->getNeuron( neuron_j )->getOutput();
 				weightGradient = ( -1 ) * m_LearningRate * errorDerivative * outputDerivative * prev_output;
 				weightGradients[ neuron_j + 1 ] = weightGradient;
 			}
 
-			vector<double> oldWeights;
-
-			prev_layer->getNeuron( neuron_i )->getWeights( oldWeights );
+			vector<double> & oldWeights = left_layer ->getNeuron( neuron_i )->getWeights();
 			size_t weightsCount = oldWeights.size();
 
 			vector<double> updatedWeigth( weightsCount );
@@ -509,8 +506,7 @@ bool CNetwork::save( string & filename )
 		for( size_t neuron_i = 0 ; neuron_i < neurons_count ; neuron_i++ )
 		{
 			INeuron * neuron = layer->getNeuron( neuron_i );
-			vector<double> weights;
-			neuron->getWeights( weights );
+			vector<double> & weights = neuron->getWeights();
 			size_t weights_count = weights.size();
 			file << weights_count << endl << flush;
 			for( size_t weight_i = 0 ; weight_i < weights_count ; weight_i++ )
@@ -648,8 +644,7 @@ void CNetwork::reverse()
 
 			for( size_t prev_layer_neuron_i = 0 ; prev_layer_neuron_i < prev_layer_neurons_count ; prev_layer_neuron_i++ )
 			{
-				vector<double> prevWeights;
-				prevLayer->getNeuron( prev_layer_neuron_i )->getWeights( prevWeights );
+				vector<double> prevWeights = prevLayer->getNeuron( prev_layer_neuron_i )->getWeights();
 
 				size_t prev_layer_weights_count = prevWeights.size();
 

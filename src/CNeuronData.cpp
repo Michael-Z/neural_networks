@@ -31,14 +31,9 @@ double CNeuronData::calculateDerivative( double value )
 	return 0;
 }
 
-void CNeuronData::getWeights( vector<double> & weights )
+vector<double> & CNeuronData::getWeights()
 {
-	weights = m_Weights;
-}
-
-void CNeuronData::setWeights( vector<double> & weights )
-{
-	m_Weights = weights;
+	return m_Weights;
 }
 
 double CNeuronData::getDelta()
