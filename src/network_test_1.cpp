@@ -26,12 +26,12 @@ int main()
 
 //	train_network_by_mnist_images();
 //	test_network_by_mnist_images();
-	test_network_reversed_by_mnist_images();
+//	test_network_reversed_by_mnist_images();
 
 //	train_network_by_images();
 //	test_network_by_images();
 
-//	train_network_by_and();
+	train_network_by_and();
 //	test_network_by_and();
 //	test_network_reverse();
 

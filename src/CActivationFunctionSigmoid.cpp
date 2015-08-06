@@ -18,9 +18,14 @@ CActivationFunctionSigmoid::~CActivationFunctionSigmoid()
 	// TODO Auto-generated destructor stub
 }
 
-double CActivationFunctionSigmoid::Activate( double value )
+double CActivationFunctionSigmoid::Function( double value )
 {
 	double result = 1 / ( 1 + exp( ( -1 )*value ) );
 
 	return result;
+}
+
+double CActivationFunctionSigmoid::Derivative( double value )
+{
+	return value * ( 1 - value );
 }

@@ -19,6 +19,8 @@ public:
 	double getOutput();
 	void setOutput( double output );
 
+	double calculateDerivative( double value );
+
 	void getWeights( vector<double> & weights );
 	void setWeights( vector<double> & weights );
 

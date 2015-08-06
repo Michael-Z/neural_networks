@@ -24,7 +24,12 @@ double CNeuronSigmoid::getOutput()
 
 void CNeuronSigmoid::setOutput( double output )
 {
-	m_Output = activationFunc->Activate( output );
+	m_Output = activationFunc->Function( output );
+}
+
+double CNeuronSigmoid::calculateDerivative( double value )
+{
+	return activationFunc->Derivative( value );
 }
 
 void CNeuronSigmoid::getWeights( vector<double> & weights )

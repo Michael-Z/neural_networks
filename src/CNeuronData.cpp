@@ -26,6 +26,11 @@ void CNeuronData::setOutput( double output )
 	m_Output = output;
 }
 
+double CNeuronData::calculateDerivative( double value )
+{
+	return 0;
+}
+
 void CNeuronData::getWeights( vector<double> & weights )
 {
 	weights = m_Weights;

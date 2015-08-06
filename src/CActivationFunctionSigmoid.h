@@ -15,7 +15,8 @@ public:
 	CActivationFunctionSigmoid();
 	virtual ~CActivationFunctionSigmoid();
 
-	virtual double Activate( double value );
+	double Function( double value );
+	double Derivative( double value );
 };
 
 #endif /* CActivationFunctionSigmoid_H_ */

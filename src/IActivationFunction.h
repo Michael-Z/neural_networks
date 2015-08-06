@@ -10,7 +10,8 @@
 
 class IActivationFunction {
 public:
-	virtual double Activate( double value ) = 0;
+	virtual double Function( double value ) = 0;
+	virtual double Derivative( double value ) = 0;
 	virtual ~IActivationFunction(){}
 };
 

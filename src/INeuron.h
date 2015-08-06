@@ -17,6 +17,8 @@ public:
 	virtual double getOutput() = 0;
 	virtual void setOutput( double output ) = 0;
 
+	virtual double calculateDerivative( double value ) = 0;
+
 	virtual void getWeights( vector<double> & weights ) = 0;
 	virtual void setWeights( vector<double> & weights ) = 0;
 
