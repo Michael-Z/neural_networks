@@ -136,8 +136,7 @@ static void epoch_cb(EpochState & epochState)
 		for( size_t neuron_i = 0 ; neuron_i < neuronsCount ; neuron_i++ )
 		{
 			INeuron * neuron = layer->getNeuron( neuron_i );
-			vector<double> weights;
-			neuron->getWeights( weights );
+			vector<double> & weights = neuron->getWeights();
 			size_t weights_count = weights.size();
 			for( size_t weight_i = 0 ; weight_i < weights_count ; weight_i++ )
 			{

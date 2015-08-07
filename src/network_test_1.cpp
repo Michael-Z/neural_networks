@@ -32,7 +32,7 @@ int main()
 //	test_network_by_images();
 
 	train_network_by_and();
-//	test_network_by_and();
+	test_network_by_and();
 //	test_network_reverse();
 
 // //	train_network_by_numeric_prediction_1();

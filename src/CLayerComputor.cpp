@@ -39,7 +39,7 @@ unsigned int CLayerComputor::getNeuronsCount()
 
 void CLayerComputor::setWeights( unsigned int neuron_index, vector<double> & weights )
 {
-	m_neurons[neuron_index]->setWeights( weights );
+	m_neurons[neuron_index]->getWeights().assign( weights.begin(), weights.end() );
 }
 
 INeuron * CLayerComputor::getNeuron( unsigned int index )

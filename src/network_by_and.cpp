@@ -18,6 +18,7 @@ void train_network_by_and()
 	const unsigned int input_count = 2;
 	const unsigned int output_count = 1;
 	vector<size_t> hiddenLayers;
+//	hiddenLayers.push_back( 3 );
 	CLayersConfiguration sequence( input_count, output_count, hiddenLayers );
 
 	CNetwork network( sequence );
@@ -37,7 +38,7 @@ void train_network_by_and()
 
 	double error_threshold = 1e-7;
 
-	double relativeErrorTrain = network.Learn( trainData_v, error_threshold, 3000000 );
+	double relativeErrorTrain = network.Learn( trainData_v, error_threshold, 100000 );
 	printf( "relativeErrorTrain=%f\n", relativeErrorTrain ); fflush( stdout );
 	network.save( network_filename );
 
