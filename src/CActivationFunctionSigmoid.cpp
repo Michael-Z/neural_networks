@@ -8,19 +8,17 @@
 #include "CActivationFunctionSigmoid.h"
 #include "cmath"
 
-CActivationFunctionSigmoid::CActivationFunctionSigmoid()
+CActivationFunctionSigmoid::CActivationFunctionSigmoid( double alpha ) : m_Alpha( alpha )
 {
-	// TODO Auto-generated constructor stub
 }
 
 CActivationFunctionSigmoid::~CActivationFunctionSigmoid()
 {
-	// TODO Auto-generated destructor stub
 }
 
 double CActivationFunctionSigmoid::Function( double value )
 {
-	double result = 1 / ( 1 + exp( ( -1 )*value ) );
+	double result = 1 / ( 1 + exp( ( -1 )*value*m_Alpha ) );
 
 	return result;
 }

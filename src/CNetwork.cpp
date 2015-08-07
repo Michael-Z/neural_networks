@@ -48,7 +48,7 @@ void CNetwork::createNetwork()
 		for( unsigned int neuron_i = 0 ; neuron_i < neurons_count ; neuron_i++ )
 		{
 			vector<double> weights( prevlayer->getNeuronsCount() + 1, 0.5 );
-//			random.fillVector( weights );
+			random.fillVector( weights );
 
 			currlayer->setWeights( neuron_i, weights );
 		}
@@ -133,7 +133,6 @@ double CNetwork::forward( vector<double> & inputData, vector<double> & outputDat
 
 		sum_square_error += ( error*error );
 	}
-	sum_square_error /= 2;
 
 	double mean_square_error = sum_square_error / last_layer->getNeuronsCount();
 
@@ -302,48 +301,19 @@ void CNetwork::backpropagation2()
 
 double getRelativeError( vector<double> errors, unsigned int valueable_size )
 {
-	size_t errors_count = valueable_size;
-
-	//keep track of the last 20 Root of Mean Square Errors
-	size_t start1 = 0;
-	size_t error_count_middle = errors_count / 2;
-	size_t start2 = 0;
-	if( error_count_middle == 0 )
-	{
-		start1 = 0;
-		start2 = errors_count;
-	}
-	else
-	{
-		start1 = 0;
-		start2 = error_count_middle;
-	}
-
-	double error1 = 0;
-	double error2 = 0;
-
-	//calculate the average of the first 10 errors
-	for( size_t error_i = start1 ; error_i < start2; error_i++)
-	{
-		error1 += errors[error_i];
-	}
-	double averageError1 = error1 / error_count_middle;
-
-	//calculate the average of the second 10 errors
-	for( size_t error_i = start2; error_i < errors_count; error_i++)
-	{
-		error2 += errors[error_i];
-	}
-	double averageError2 = error2 / error_count_middle;
-
-	double relativeErr = (averageError1 - averageError2)/averageError1;
-	return (relativeErr > 0) ? relativeErr : -relativeErr;
+	double errorSquareSum = 0.0;
+	std::for_each( errors.begin(), errors.begin() + valueable_size,
+																	 [ & ] ( double & error )
+																	 {
+																		errorSquareSum += error;
+																	 });
+	double errorSquareSumMean = errorSquareSum/valueable_size;
+	return errorSquareSumMean;
 }
 
 double CNetwork::Learn( vector<TrainingData> & trainData, double error_threshold, unsigned int max_epoch )
 {
 	size_t train_data_count = trainData.size();
-	vector<double> errors_per_epoch( max_epoch, 0.0 );
 	double relativeError = 1000.0;
 	unsigned int epoch_i = 0;
 	EpochState epochState = { *m_LayersConfiguration, 0.0 };
@@ -366,18 +336,15 @@ double CNetwork::Learn( vector<TrainingData> & trainData, double error_threshold
 		{
 			if( m_epochStateCallback )
 			{
+				epochState.index = epoch_i;
 				m_epochStateCallback( epochState );
 			}
 		}
 
-		errors_per_epoch[epoch_i] = sqrt(meanSquareErrorSum / train_data_count);
-
 		epoch_i++;
 
-//		if( epoch_i % 2 == 0 )
-		{
-			relativeError = meanSquareErrorSum;//getRelativeError( errors_per_epoch, epoch_i );
-		}
+		relativeError = meanSquareErrorSum / train_data_count;//getRelativeError( errors_per_epoch, epoch_i );
+
 	}
 
 	return relativeError;
@@ -396,7 +363,7 @@ double CNetwork::Test( vector<double> & inputs, vector<double> & output_result )
 	double squareErrorSum = 0;
 
 	vector<double> output( layers[layers.size() - 1]->getNeuronsCount(), 0.0 );
-	squareErrorSum += forward( inputs, output );
+	squareErrorSum = forward( inputs, output );
 
 
 	size_t last_layer_neurons_count = last_layer->getNeuronsCount();
@@ -408,7 +375,7 @@ double CNetwork::Test( vector<double> & inputs, vector<double> & output_result )
 		output_result[neuron_i] = last_layer->getNeuron( neuron_i )->getOutput();
 	}
 
-	return sqrt( squareErrorSum / inputs_count );
+	return squareErrorSum;
 }
 
 bool CNetwork::save( string & filename )
@@ -507,13 +474,14 @@ bool CNetwork::load( string & filename )
 		for( size_t neuron_i = 0 ; neuron_i < neurons_count ; neuron_i++ )
 		{
 			vector<double> & weights = layers[layer_i]->getNeuron( neuron_i )->getWeights();
+			weights.clear();
 			size_t weights_count = 0;
 			file >> weights_count;
 			for( size_t weight_i = 0 ; weight_i < weights_count && (file.eof() != true); weight_i++ )
 			{
 				float weight = 0;
 				file >> weight;
-				weights[weight_i] = weight;
+				weights.push_back( weight );
 			}
 		}
 	}

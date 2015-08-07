@@ -31,7 +31,7 @@ int main()
 //	train_network_by_images();
 //	test_network_by_images();
 
-	train_network_by_and();
+//	train_network_by_and();
 	test_network_by_and();
 //	test_network_reverse();
 

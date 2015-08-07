@@ -38,7 +38,7 @@ void train_network_by_and()
 
 	double error_threshold = 1e-7;
 
-	double relativeErrorTrain = network.Learn( trainData_v, error_threshold, 1000000 );
+	double relativeErrorTrain = network.Learn( trainData_v, error_threshold, 100000 );
 	printf( "relativeErrorTrain=%f\n", relativeErrorTrain ); fflush( stdout );
 	network.save( network_filename );
 
@@ -81,11 +81,11 @@ void test_network_by_and()
 		getTestTrainData( test_input, file_i );
 
 		vector<double> output_test;
-		double relativeErrorTest = network.Test( test_input.input, output_test );
+		network.Test( test_input.input, output_test );
 		dump( output_test );
 		double max_value = 0.0;
 
-		printf( "relativeErrorTest=%f, out=%f\n", relativeErrorTest, output_test[0] ); fflush( stdout );
+		printf( "out=%f\n", output_test[0] ); fflush( stdout );
 	}
 }
 

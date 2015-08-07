@@ -12,11 +12,15 @@
 
 class CActivationFunctionSigmoid: public IActivationFunction {
 public:
-	CActivationFunctionSigmoid();
+	CActivationFunctionSigmoid( double alpha );
 	virtual ~CActivationFunctionSigmoid();
 
 	double Function( double value );
 	double Derivative( double value );
+
+private:
+
+	 double m_Alpha;
 };
 
 #endif /* CActivationFunctionSigmoid_H_ */

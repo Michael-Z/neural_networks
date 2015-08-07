@@ -15,7 +15,7 @@
 using namespace std;
 
 #define BIASOUTPUT 1   //output for bias. It's always 1.
-#define ETA 0.7   //learning rate
+#define ETA 1   //learning rate
 
 struct TrainingData
 {
@@ -27,6 +27,7 @@ typedef struct
 {
 	CLayersConfiguration &layerConfiguration;
 	double squareErrorSum;
+	int index;
 }EpochState;
 
 typedef void (*EpochStateCallback)(EpochState & epochState);

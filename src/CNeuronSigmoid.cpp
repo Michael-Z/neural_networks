@@ -10,7 +10,7 @@
 
 CNeuronSigmoid::CNeuronSigmoid(): m_Output(0.0 ), m_Delta( 0.0 ), m_Error( 0.0 )
 {
-	activationFunc = new CActivationFunctionSigmoid();
+	activationFunc = new CActivationFunctionSigmoid( 0.01 );
 }
 
 CNeuronSigmoid::~CNeuronSigmoid()

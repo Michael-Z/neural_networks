@@ -11,6 +11,7 @@
 static void getInputResolution( size_t & width, size_t & height );
 static void getInputData( vector<double> & data, const char * file_format, int index );
 static void dump( vector<double> & input, unsigned int items_per_line  );
+static void epoch_cb(EpochState & epochState);
 
 void train_network_by_images()
 {
@@ -41,7 +42,9 @@ void train_network_by_images()
 
 	double error_threshold = 1e-4;
 
-	double relativeErrorTrain = network.Learn( trainData_v, error_threshold, 3000 );
+	network.setEpochStateCallback( epoch_cb );
+
+	double relativeErrorTrain = network.Learn( trainData_v, error_threshold, 1000 );
 	printf( "relativeErrorTrain=%f\n", relativeErrorTrain ); fflush( stdout );
 
 	network.save( network_filename );
@@ -84,11 +87,13 @@ void test_network_by_images()
 	const unsigned int output_count = 26;
 
 	string filename = "network_images.net";
+
 	CNetwork network( filename );
 
 	for( unsigned int file_i = 0 ; file_i < output_count ; file_i++ )
 	{
 		vector<double> test_input;
+
 		getInputData( test_input, "./train_img/fangtasia-upper_%d.png_copy.png", file_i );
 		dump( test_input, 72 );
 
@@ -106,7 +111,15 @@ void test_network_by_images()
 			}
 		}
 
-		printf( "relativeErrorTest=%f, image_index=%d\n", relativeErrorTest, (int)max_index ); fflush( stdout );
+		printf( "relativeErrorTest=%f, image_index=%d, max_value=%f, expected_index=%d, expected_index_value=%f\n", relativeErrorTest, (int)max_index, max_value, file_i, output_test[file_i] ); fflush( stdout );
+	}
+}
+
+static void epoch_cb(EpochState & epochState)
+{
+	if( (epochState.index % 100) == 0 )
+	{
+		printf("epochIndex=%d\n", epochState.index);fflush(stdout);
 	}
 }
 
