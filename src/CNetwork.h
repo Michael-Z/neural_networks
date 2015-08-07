@@ -49,6 +49,7 @@ private:
 	void createNetwork();
 	double forward( vector<double> & input, vector<double> & outputData );
 	void backpropagation();
+	void backpropagation2();
 
 	bool m_fromFile;
 	double m_LearningRate;

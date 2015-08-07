@@ -38,7 +38,7 @@ void train_network_by_and()
 
 	double error_threshold = 1e-7;
 
-	double relativeErrorTrain = network.Learn( trainData_v, error_threshold, 100000 );
+	double relativeErrorTrain = network.Learn( trainData_v, error_threshold, 1000000 );
 	printf( "relativeErrorTrain=%f\n", relativeErrorTrain ); fflush( stdout );
 	network.save( network_filename );
 
