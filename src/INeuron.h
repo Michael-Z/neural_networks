@@ -9,9 +9,11 @@
 #define NEURON_H_
 
 #include <vector>
+#include "Weight.h"
 using namespace std;
 
-class INeuron {
+class INeuron
+{
 public:
 
 	virtual double getOutput() = 0;
@@ -19,13 +21,16 @@ public:
 
 	virtual double calculateDerivative( double value ) = 0;
 
-	virtual vector<double> & getWeights() = 0;
+	virtual vector<Weight> & getWeights() = 0;
 
 	virtual double getDelta() = 0;
 	virtual void setDelta( double output ) = 0;
 
 	virtual double getError() = 0;
 	virtual void setError( double output ) = 0;
+
+	virtual double getGradient() = 0;
+	virtual void setGradient( double gradient ) = 0;
 
 	virtual ~INeuron(){}
 };

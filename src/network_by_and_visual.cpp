@@ -86,7 +86,7 @@ static void train_network_by_and()
 
 	for( size_t network_i = 0 ; network_i < network_count ; network_i++ )
 	{
-		CNetwork network( sequence );
+		CNetwork network( sequence, 1, 0.1 );
 		network.setEpochStateCallback( epoch_cb );
 		double relativeErrorTrain = network.Learn( trainData_v, error_threshold, 30000 );
 		printf( "relativeErrorTrain=%f\n", relativeErrorTrain ); fflush( stdout );
@@ -136,11 +136,11 @@ static void epoch_cb(EpochState & epochState)
 		for( size_t neuron_i = 0 ; neuron_i < neuronsCount ; neuron_i++ )
 		{
 			INeuron * neuron = layer->getNeuron( neuron_i );
-			vector<double> & weights = neuron->getWeights();
+			vector<Weight> & weights = neuron->getWeights();
 			size_t weights_count = weights.size();
 			for( size_t weight_i = 0 ; weight_i < weights_count ; weight_i++ )
 			{
-				double weight = weights[weight_i];
+				double weight = weights[weight_i].value();
 				weights_square_sum += weight * weight;
 			}
 		}

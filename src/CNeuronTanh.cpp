@@ -5,15 +5,15 @@
  *      Author: vostanin
  */
 
-#include "CNeuronSigmoid.h"
+#include "CNeuronTanh.h"
 #include "CActivationFunctionSigmoid.h"
 #include "CActivationFunctionTanh.h"
 
-CNeuronSigmoid::CNeuronSigmoid()
+CNeuronTanh::CNeuronTanh()
 {
-	activationFunc = new CActivationFunctionSigmoid( 0.01 );
+	activationFunc = new CActivationFunctionTanh( 1 );
 }
 
-CNeuronSigmoid::~CNeuronSigmoid()
+CNeuronTanh::~CNeuronTanh()
 {
 }

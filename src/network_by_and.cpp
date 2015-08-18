@@ -8,10 +8,32 @@
 #include "network_by_and.h"
 #include <cstdio>
 #include <iostream>
+#include <ctime>
 using namespace std;
 
 static void getTestTrainData( TrainingData & data, int index );
 static void dump( vector<double> & input );
+
+class Timer
+{
+public:
+  Timer(const std::string& name)
+    : name_ (name),
+      start_ (std::clock())
+    {
+    }
+  ~Timer()
+    {
+	  clock_t now = std::clock();
+      double elapsed = (double(now - start_) / CLOCKS_PER_SEC);
+      std::cout << "start=" << start_ << "; now=" << now << "; " << name_ << ": " << (elapsed * 1000) << " ms" << std::endl;
+    }
+private:
+  std::string name_;
+  std::clock_t start_;
+};
+
+#define TIMER(name) Timer timer__(name);
 
 void train_network_by_and()
 {
@@ -21,7 +43,7 @@ void train_network_by_and()
 //	hiddenLayers.push_back( 3 );
 	CLayersConfiguration sequence( input_count, output_count, hiddenLayers );
 
-	CNetwork network( sequence );
+	CNetwork network( sequence, 1, 0.1 );
 
 	string network_filename( "network_and.net" );
 
@@ -38,7 +60,12 @@ void train_network_by_and()
 
 	double error_threshold = 1e-7;
 
-	double relativeErrorTrain = network.Learn( trainData_v, error_threshold, 100000 );
+	double relativeErrorTrain = 0.0;
+	{
+		TIMER("train")
+
+		relativeErrorTrain = network.Learn( trainData_v, error_threshold, 10000000 );
+	}
 	printf( "relativeErrorTrain=%f\n", relativeErrorTrain ); fflush( stdout );
 	network.save( network_filename );
 
@@ -94,6 +121,7 @@ void test_network_by_and()
 void getTestTrainData( TrainingData & data, int index )
 {
 	static int all_input_data[][3] = { {0, 0, 0}, {0, 1, 0}, {1, 0, 0}, {1, 1, 1} };
+//	static int all_input_data[][3] = { {-1, -1, 0}, {-1, 1, 0}, {1, -1, 0}, {1, 1, 1} };
 
 	data.input.resize( 2, 0 );
 	data.input[0] = all_input_data[index][0];

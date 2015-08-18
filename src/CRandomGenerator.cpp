@@ -26,12 +26,12 @@ double CRandomGenerator::getValue()
 	return ((int)rand()%(int)(1.0/m_Precision))/(float) (1.0/m_Precision) - 0.5;
 }
 
-void CRandomGenerator::fillVector( vector<double> & values )
+void CRandomGenerator::fillVector( vector<Weight> & values )
 {
 	size_t values_count = values.size();
 
 	for( size_t value_i = 0 ; value_i < values_count ; value_i++ )
 	{
-		values[value_i] = getValue();
+		values[value_i].value( getValue() );
 	}
 }

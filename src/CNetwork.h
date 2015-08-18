@@ -14,18 +14,18 @@
 #include <string>
 using namespace std;
 
-#define BIASOUTPUT 1   //output for bias. It's always 1.
-#define ETA 1   //learning rate
-
 struct TrainingData
 {
 	vector<double> input;
 	vector<double> output;
 };
 
+class CNetwork;
+
 typedef struct
 {
 	CLayersConfiguration &layerConfiguration;
+	CNetwork & network;
 	double squareErrorSum;
 	int index;
 }EpochState;
@@ -35,7 +35,7 @@ typedef void (*EpochStateCallback)(EpochState & epochState);
 class CNetwork
 {
 public:
-	CNetwork( CLayersConfiguration & sequence );
+	CNetwork( CLayersConfiguration & sequence, double learningRateStart = 1, double momentRate = 0.1 );
 	CNetwork( string & filename );
 	~CNetwork();
 
@@ -54,6 +54,7 @@ private:
 
 	bool m_fromFile;
 	double m_LearningRate;
+	double m_MomentRate;
 	CLayersConfiguration * m_LayersConfiguration;
 	EpochStateCallback m_epochStateCallback;
 };

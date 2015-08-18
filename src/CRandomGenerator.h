@@ -9,6 +9,7 @@
 #define CRANDOMGENERATOR_H_
 
 #include <vector>
+#include "Weight.h"
 using namespace std;
 
 class CRandomGenerator
@@ -18,7 +19,7 @@ public:
 	~CRandomGenerator();
 
 	double getValue();
-	void fillVector( vector<double> & values );
+	void fillVector( vector<Weight> & values );
 private:
 	double m_Low;
 	double m_High;

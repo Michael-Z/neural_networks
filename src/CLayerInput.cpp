@@ -37,9 +37,9 @@ unsigned int CLayerInput::getNeuronsCount()
 	return m_neurons.size();
 }
 
-void CLayerInput::setWeights( unsigned int neuron_index, vector<double> & weights )
+void CLayerInput::setWeights( unsigned int neuron_index, vector<Weight> & weights )
 {
-	m_neurons[neuron_index]->getWeights().assign( weights.begin(), weights.end() );
+	//empty
 }
 
 INeuron * CLayerInput::getNeuron( unsigned int index )

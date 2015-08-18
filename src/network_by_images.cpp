@@ -7,11 +7,36 @@
 
 #include "network_by_images.h"
 #include <cstdio>
+#include <ctime>
+#include <iostream>
 
 static void getInputResolution( size_t & width, size_t & height );
 static void getInputData( vector<double> & data, const char * file_format, int index );
 static void dump( vector<double> & input, unsigned int items_per_line  );
 static void epoch_cb(EpochState & epochState);
+
+
+class Timer
+{
+public:
+  Timer(const std::string& name)
+    : name_ (name),
+      start_ (std::clock())
+    {
+    }
+  ~Timer()
+    {
+	  clock_t now = std::clock();
+      double elapsed = (double(now - start_) / CLOCKS_PER_SEC);
+      std::cout << "start=" << start_ << "; now=" << now << "; " << name_ << ": " << (elapsed * 1000) << " ms" << std::endl;
+    }
+private:
+  std::string name_;
+  std::clock_t start_;
+};
+
+#define TIMER(name) Timer timer__(name);
+
 
 void train_network_by_images()
 {
@@ -23,7 +48,7 @@ void train_network_by_images()
 	hiddenLayers.push_back( input_count / 2 );
 	CLayersConfiguration sequence( input_count, output_count, hiddenLayers );
 
-	CNetwork network( sequence );
+	CNetwork network( sequence, 1, 0.1 );
 
 	string network_filename( "network_images.net" );
 
@@ -44,7 +69,12 @@ void train_network_by_images()
 
 	network.setEpochStateCallback( epoch_cb );
 
-	double relativeErrorTrain = network.Learn( trainData_v, error_threshold, 1000 );
+	double relativeErrorTrain = 0.0;
+	{
+		TIMER("train")
+
+		relativeErrorTrain = network.Learn( trainData_v, error_threshold, 1000 );
+	}
 	printf( "relativeErrorTrain=%f\n", relativeErrorTrain ); fflush( stdout );
 
 	network.save( network_filename );
@@ -55,7 +85,7 @@ void train_network_by_images()
 
 	vector<double> output_test;
 	double relativeErrorTest = network.Test( test_input, output_test );
-	dump( output_test, 72 );
+//	dump( output_test, 72 );
 	printf( "relativeErrorTest=%f\n", relativeErrorTest ); fflush( stdout );
 
 	for( unsigned int file_i = 0 ; file_i < output_count ; file_i++ )
@@ -64,7 +94,7 @@ void train_network_by_images()
 
 		vector<double> output_test;
 		double relativeErrorTest = network.Test( test_input, output_test );
-		dump( output_test, 72 );
+//		dump( output_test, 72 );
 		size_t max_index = 0;
 		double max_value = 0.0;
 		for( size_t output_i = 0 ; output_i < output_test.size() ; output_i++ )
@@ -95,11 +125,11 @@ void test_network_by_images()
 		vector<double> test_input;
 
 		getInputData( test_input, "./train_img/fangtasia-upper_%d.png_copy.png", file_i );
-		dump( test_input, 72 );
+//		dump( test_input, 72 );
 
 		vector<double> output_test;
 		double relativeErrorTest = network.Test( test_input, output_test );
-		dump( output_test, 72 );
+//		dump( output_test, 72 );
 		size_t max_index = 0;
 		double max_value = 0.0;
 		for( size_t output_i = 0 ; output_i < output_test.size() ; output_i++ )
@@ -120,6 +150,9 @@ static void epoch_cb(EpochState & epochState)
 	if( (epochState.index % 100) == 0 )
 	{
 		printf("epochIndex=%d\n", epochState.index);fflush(stdout);
+		string filename = "network_images.net";
+		epochState.network.save( filename );
+		test_network_by_images();
 	}
 }
 

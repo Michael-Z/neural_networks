@@ -1,25 +1,26 @@
 /*
- * CNeuronData.h
+ * CNeuronSigmoid.h
  *
  *  Created on: Jan 26, 2015
  *      Author: vostanin
  */
 
-#ifndef CNeuronData_H_
-#define CNeuronData_H_
+#ifndef CNeuronBase_H_
+#define CNeuronBase_H_
 
 #include "INeuron.h"
 #include "IActivationFunction.h"
 
-class CNeuronData: public INeuron {
+class CNeuronBase: public INeuron {
 public:
-	CNeuronData();
-	~CNeuronData();
+	CNeuronBase();
+	~CNeuronBase();
 
 	double getOutput();
 	void setOutput( double output );
 
 	double calculateDerivative( double value );
+
 
 	vector<Weight> & getWeights();
 
@@ -32,10 +33,16 @@ public:
 	double getGradient();
 	void setGradient( double gradient );
 
+
+	IActivationFunction * activationFunc;
+
 private:
 
 	double 			m_Output;
 	vector<Weight> 	m_Weights;
+	double 			m_Delta;
+	double 			m_Error;
+	double 			m_Gradient;
 };
 
-#endif /* CNeuronData_H_ */
+#endif /* CNeuronBase_H_ */

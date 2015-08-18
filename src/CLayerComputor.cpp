@@ -7,6 +7,7 @@
 
 #include "CLayerComputor.h"
 #include "CNeuronSigmoid.h"
+#include "CNeuronTanh.h"
 
 CLayerComputor::CLayerComputor( unsigned int neuronsCount )
 {
@@ -37,7 +38,7 @@ unsigned int CLayerComputor::getNeuronsCount()
 	return m_neurons.size();
 }
 
-void CLayerComputor::setWeights( unsigned int neuron_index, vector<double> & weights )
+void CLayerComputor::setWeights( unsigned int neuron_index, vector<Weight> & weights )
 {
 	m_neurons[neuron_index]->getWeights().assign( weights.begin(), weights.end() );
 }

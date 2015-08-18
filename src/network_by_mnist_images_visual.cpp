@@ -71,7 +71,7 @@ static void train_network_by_mnist_images()
 	hiddenLayers.push_back( input_count / 2 );
 	CLayersConfiguration sequence( input_count, output_count, hiddenLayers );
 
-	CNetwork network( sequence );
+	CNetwork network( sequence, 1, 0.1 );
 	network.setEpochStateCallback( epoch_cb );
 
 	string network_filename( "network_mnist_images_visual.net" );
@@ -154,11 +154,11 @@ static void epoch_cb(EpochState & epochState)
 		for( size_t neuron_i = 0 ; neuron_i < neuronsCount ; neuron_i++ )
 		{
 			INeuron * neuron = layer->getNeuron( neuron_i );
-			vector<double> & weights = neuron->getWeights();
+			vector<Weight> & weights = neuron->getWeights();
 			size_t weights_count = weights.size();
 			for( size_t weight_i = 0 ; weight_i < weights_count ; weight_i++ )
 			{
-				double weight = weights[weight_i];
+				double weight = weights[weight_i].value();
 				weights_square_sum += weight * weight;
 			}
 		}

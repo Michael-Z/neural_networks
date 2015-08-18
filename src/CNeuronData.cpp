@@ -8,7 +8,7 @@
 #include "CNeuronData.h"
 #include "CActivationFunctionSigmoid.h"
 
-CNeuronData::CNeuronData(): m_Output(0.0 ), m_Delta( 0.0 ), m_Error( 0.0 )
+CNeuronData::CNeuronData(): m_Output(0.0 )
 {
 }
 
@@ -31,27 +31,35 @@ double CNeuronData::calculateDerivative( double value )
 	return 0;
 }
 
-vector<double> & CNeuronData::getWeights()
+vector<Weight> & CNeuronData::getWeights()
 {
 	return m_Weights;
 }
 
 double CNeuronData::getDelta()
 {
-	return m_Delta;
+	return 0.0;
 }
 
 void CNeuronData::setDelta( double delta )
 {
-	m_Delta = delta;
 }
 
 double CNeuronData::getError()
 {
-	return m_Error;
+	return 0.0;
 }
 
 void CNeuronData::setError( double error )
 {
-	m_Error = error;
+}
+
+double CNeuronData::getGradient()
+{
+	return 0;
+}
+
+void CNeuronData::setGradient( double gradient )
+{
+	;
 }

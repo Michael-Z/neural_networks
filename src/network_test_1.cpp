@@ -11,6 +11,7 @@
 #include "network_by_mnist_images.h"
 #include "network_by_images.h"
 #include "network_by_and.h"
+#include "network_by_sin.h"
 #include "network_by_numeric_prediction_1.h"
 #include <iostream>
 using namespace std;
@@ -32,7 +33,11 @@ int main()
 //	test_network_by_images();
 
 //	train_network_by_and();
-	test_network_by_and();
+//	test_network_by_and();
+
+	train_network_by_sin();
+	test_network_by_sin();
+
 //	test_network_reverse();
 
 // //	train_network_by_numeric_prediction_1();

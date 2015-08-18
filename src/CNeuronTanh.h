@@ -5,16 +5,16 @@
  *      Author: vostanin
  */
 
-#ifndef CNeuronSigmoid_H_
-#define CNeuronSigmoid_H_
+#ifndef CNeuronTanh_H_
+#define CNeuronTanh_H_
 
 #include "CNeuronBase.h"
 #include "IActivationFunction.h"
 
-class CNeuronSigmoid: public CNeuronBase {
+class CNeuronTanh: public CNeuronBase {
 public:
-	CNeuronSigmoid();
-	~CNeuronSigmoid();
+	CNeuronTanh();
+	~CNeuronTanh();
 };
 
 #endif /* CNeuronSigmoid_H_ */

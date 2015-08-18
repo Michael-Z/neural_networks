@@ -25,7 +25,7 @@ void train_network_by_mnist_images()
 	hiddenLayers.push_back( input_count / 2 );
 	CLayersConfiguration sequence( input_count, output_count, hiddenLayers );
 
-	CNetwork network( sequence );
+	CNetwork network( sequence, 1, 0.1 );
 
 	string network_filename( "network_mnist_images.net" );
 

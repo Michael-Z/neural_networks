@@ -19,7 +19,7 @@ public:
 	virtual void init( unsigned int neuronCount ) = 0;
 	virtual unsigned int getNeuronsCount() = 0;
 	virtual INeuron * getNeuron( unsigned int index ) = 0;
-	virtual void setWeights( unsigned int index, vector<double> & weights ) = 0;
+	virtual void setWeights( unsigned int index, vector<Weight> & weights ) = 0;
 	virtual ~ILayer(){}
 };
 
