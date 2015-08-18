@@ -48,7 +48,7 @@ void train_network_by_images()
 	hiddenLayers.push_back( input_count / 2 );
 	CLayersConfiguration sequence( input_count, output_count, hiddenLayers );
 
-	CNetwork network( sequence, 1, 0.1 );
+	CNetwork network( sequence, 10, 0.1 );
 
 	string network_filename( "network_images.net" );
 
@@ -65,7 +65,7 @@ void train_network_by_images()
 		trainData_v[file_i].output[file_i] = 1;
 	}
 
-	double error_threshold = 1e-4;
+	double error_threshold = 1e-5;
 
 	network.setEpochStateCallback( epoch_cb );
 
@@ -151,7 +151,7 @@ static void epoch_cb(EpochState & epochState)
 	{
 		printf("epochIndex=%d\n", epochState.index);fflush(stdout);
 		string filename = "network_images.net";
-		epochState.network.save( filename );
+		epochState.network->save( filename );
 		test_network_by_images();
 	}
 }

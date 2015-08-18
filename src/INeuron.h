@@ -23,14 +23,8 @@ public:
 
 	virtual vector<Weight> & getWeights() = 0;
 
-	virtual double getDelta() = 0;
-	virtual void setDelta( double output ) = 0;
-
 	virtual double getError() = 0;
 	virtual void setError( double output ) = 0;
-
-	virtual double getGradient() = 0;
-	virtual void setGradient( double gradient ) = 0;
 
 	virtual ~INeuron(){}
 };

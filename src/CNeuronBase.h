@@ -11,30 +11,25 @@
 #include "INeuron.h"
 #include "IActivationFunction.h"
 
-class CNeuronBase: public INeuron {
+class CNeuronBase: public INeuron
+{
 public:
 	CNeuronBase();
 	~CNeuronBase();
 
-	double getOutput();
-	void setOutput( double output );
+	virtual double getOutput();
+	virtual void setOutput( double output );
 
-	double calculateDerivative( double value );
+	virtual double calculateDerivative( double value );
 
+	virtual vector<Weight> & getWeights();
 
-	vector<Weight> & getWeights();
+	virtual double getError();
+	virtual void setError( double error );
 
-	double getDelta();
-	void setDelta( double delta );
+protected:
 
-	double getError();
-	void setError( double error );
-
-	double getGradient();
-	void setGradient( double gradient );
-
-
-	IActivationFunction * activationFunc;
+	IActivationFunction * m_ActivationFunc;
 
 private:
 
@@ -42,7 +37,6 @@ private:
 	vector<Weight> 	m_Weights;
 	double 			m_Delta;
 	double 			m_Error;
-	double 			m_Gradient;
 };
 
 #endif /* CNeuronBase_H_ */

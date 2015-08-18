@@ -11,7 +11,7 @@
 
 CNeuronTanh::CNeuronTanh()
 {
-	activationFunc = new CActivationFunctionTanh( 1 );
+	m_ActivationFunc = new CActivationFunctionTanh( 1 );
 }
 
 CNeuronTanh::~CNeuronTanh()

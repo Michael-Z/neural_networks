@@ -42,7 +42,7 @@ void train_network_by_sin()
 	const unsigned int input_count = 1;
 	const unsigned int output_count = 1;
 	vector<size_t> hiddenLayers;
-	hiddenLayers.push_back( 20 );
+	hiddenLayers.push_back( 10 );
 	CLayersConfiguration sequence( input_count, output_count, hiddenLayers );
 
 	CNetwork network( sequence, 1, 0.1 );

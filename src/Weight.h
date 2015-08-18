@@ -24,6 +24,8 @@ public:
 	void learningRate( double rate );
 	double learningRate() const;
 
+	void operator = ( double value );
+
 private:
 
 	double m_Value;

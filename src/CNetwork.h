@@ -25,7 +25,7 @@ class CNetwork;
 typedef struct
 {
 	CLayersConfiguration &layerConfiguration;
-	CNetwork & network;
+	CNetwork * network;
 	double squareErrorSum;
 	int index;
 }EpochState;
@@ -44,7 +44,6 @@ public:
 	bool save( string & filename );
 	bool load( string & filename );
 	void setEpochStateCallback( EpochStateCallback epochStateCallback );
-	void setLearnRate( double learnRate );
 	void reverse();
 private:
 	void createNetwork();

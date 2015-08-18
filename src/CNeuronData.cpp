@@ -53,13 +53,3 @@ double CNeuronData::getError()
 void CNeuronData::setError( double error )
 {
 }
-
-double CNeuronData::getGradient()
-{
-	return 0;
-}
-
-void CNeuronData::setGradient( double gradient )
-{
-	;
-}

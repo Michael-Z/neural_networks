@@ -32,6 +32,11 @@ void CLayerInput::init( unsigned int neuronsCount )
 	}
 }
 
+void CLayerInput::initWeightsParams( double learningRate )
+{
+	//empty
+}
+
 unsigned int CLayerInput::getNeuronsCount()
 {
 	return m_neurons.size();
@@ -46,3 +51,21 @@ INeuron * CLayerInput::getNeuron( unsigned int index )
 {
 	return m_neurons[index];
 }
+
+double CLayerInput::applyErrors( vector<double> & expected )
+{
+}
+
+double CLayerInput::getErrorDerivative( uint32_t neuron_index )
+{
+	return 0.0;
+}
+
+
+
+
+
+
+
+
+

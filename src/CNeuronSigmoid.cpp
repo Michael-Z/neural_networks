@@ -11,7 +11,7 @@
 
 CNeuronSigmoid::CNeuronSigmoid()
 {
-	activationFunc = new CActivationFunctionSigmoid( 0.01 );
+	m_ActivationFunc = new CActivationFunctionSigmoid( 0.01 );
 }
 
 CNeuronSigmoid::~CNeuronSigmoid()

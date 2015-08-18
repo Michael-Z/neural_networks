@@ -29,9 +29,6 @@ public:
 	double getError();
 	void setError( double error );
 
-	double getGradient();
-	void setGradient( double gradient );
-
 private:
 
 	double 			m_Output;

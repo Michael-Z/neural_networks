@@ -18,12 +18,15 @@ class CLayerInput: public ILayer
 public:
 	CLayerInput( unsigned int neuronsCount );
 	virtual ~CLayerInput();
+	void initWeightsParams( double learningRate );
 	void setWeights( unsigned int neuron_index, vector<Weight> & weights );
 	void setValues( vector<double> & values );
 	void calculateWeights( ILayer * prev_layer );
 	void getWeights( vector<Weight> & weights );
 	unsigned int getNeuronsCount();
 	INeuron * getNeuron( unsigned int index );
+	double applyErrors( vector<double> & expected );
+	double getErrorDerivative( uint32_t neuron_index );
 private:
 	void init( unsigned int neuronsCount );
 private:

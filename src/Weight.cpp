@@ -16,6 +16,11 @@ Weight::Weight( double value ) : m_Value( value ), m_Gradient( 0.0 ), m_Learning
 
 }
 
+void Weight::operator = ( double value )
+{
+	m_Value = value;
+}
+
 Weight::~Weight()
 {
 }

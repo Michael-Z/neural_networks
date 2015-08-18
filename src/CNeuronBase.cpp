@@ -9,9 +9,8 @@
 #include "CActivationFunctionSigmoid.h"
 #include "CActivationFunctionTanh.h"
 
-CNeuronBase::CNeuronBase(): m_Output(0.0 ), m_Delta( 0.0 ), m_Error( 0.0 ), m_Gradient( 0.0 )
+CNeuronBase::CNeuronBase(): m_ActivationFunc( 0 ), m_Output( 0.0 ), m_Delta( 0.0 ), m_Error( 0.0 )
 {
-	activationFunc = 0;
 }
 
 CNeuronBase::~CNeuronBase()
@@ -25,27 +24,17 @@ double CNeuronBase::getOutput()
 
 void CNeuronBase::setOutput( double output )
 {
-	m_Output = activationFunc->Function( output );
+	m_Output = m_ActivationFunc->Function( output );
 }
 
 double CNeuronBase::calculateDerivative( double value )
 {
-	return activationFunc->Derivative( value );
+	return m_ActivationFunc->Derivative( value );
 }
 
 vector<Weight> & CNeuronBase::getWeights()
 {
 	return m_Weights;
-}
-
-double CNeuronBase::getDelta()
-{
-	return m_Delta;
-}
-
-void CNeuronBase::setDelta( double delta )
-{
-	m_Delta = delta;
 }
 
 double CNeuronBase::getError()
@@ -58,12 +47,12 @@ void CNeuronBase::setError( double error )
 	m_Error = error;
 }
 
-double CNeuronBase::getGradient()
-{
-	return m_Gradient;
-}
-
-void CNeuronBase::setGradient( double gradient )
-{
-	m_Gradient = gradient;
-}
+//double CNeuronBase::getGradient()
+//{
+//	return m_Gradient;
+//}
+//
+//void CNeuronBase::setGradient( double gradient )
+//{
+//	m_Gradient = gradient;
+//}
