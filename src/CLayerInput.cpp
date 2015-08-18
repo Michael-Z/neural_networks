@@ -54,6 +54,7 @@ INeuron * CLayerInput::getNeuron( unsigned int index )
 
 double CLayerInput::applyErrors( vector<double> & expected )
 {
+	return 0.0;
 }
 
 double CLayerInput::getErrorDerivative( uint32_t neuron_index )

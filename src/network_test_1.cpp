@@ -13,9 +13,17 @@
 #include "network_by_and.h"
 #include "network_by_sin.h"
 #include "network_by_numeric_prediction_1.h"
+#include "Window.h"
+#include "Graph.h"
+#include <thread>
 #include <iostream>
 using namespace std;
 
+void graph_tread()
+{
+	Graph::getInstance( Window::getInstance().getWindow(), Window::getInstance().getWidth(), Window::getInstance().getHeight() );
+	Window::getInstance().run();
+}
 
 int main()
 {
@@ -28,6 +36,9 @@ int main()
 //	train_network_by_mnist_images();
 //	test_network_by_mnist_images();
 //	test_network_reversed_by_mnist_images();
+
+	std::thread thr( graph_tread );
+	sleep( 1 );
 
 	train_network_by_images();
 	test_network_by_images();

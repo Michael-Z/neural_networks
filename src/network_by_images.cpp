@@ -9,6 +9,9 @@
 #include <cstdio>
 #include <ctime>
 #include <iostream>
+#include <thread>
+
+#include "Window.h"
 
 static void getInputResolution( size_t & width, size_t & height );
 static void getInputData( vector<double> & data, const char * file_format, int index );
@@ -40,6 +43,7 @@ private:
 
 void train_network_by_images()
 {
+
 	size_t width = 0, height = 0;
 	getInputResolution( width, height );
 	const unsigned int output_count = 26;
@@ -144,15 +148,16 @@ void test_network_by_images()
 		printf( "relativeErrorTest=%f, image_index=%d, max_value=%f, expected_index=%d, expected_index_value=%f\n", relativeErrorTest, (int)max_index, max_value, file_i, output_test[file_i] ); fflush( stdout );
 	}
 }
-
+#include "Graph.h"
 static void epoch_cb(EpochState & epochState)
 {
-	if( (epochState.index % 100) == 0 )
+	if( (epochState.index % 10) == 0 )
 	{
+		Graph::getInstance()->addPoint( epochState.index * 0.01, epochState.squareErrorSum );
 		printf("epochIndex=%d\n", epochState.index);fflush(stdout);
 		string filename = "network_images.net";
-		epochState.network->save( filename );
-		test_network_by_images();
+//		epochState.network->save( filename );
+//		test_network_by_images();
 	}
 }
 
