@@ -40,14 +40,14 @@ int main()
 	std::thread thr( graph_tread );
 	sleep( 1 );
 
-	train_network_by_images();
-	test_network_by_images();
+//	train_network_by_images();
+//	test_network_by_images();
 
 //	train_network_by_and();
 //	test_network_by_and();
 
-//	train_network_by_sin();
-//	test_network_by_sin();
+	train_network_by_sin();
+	test_network_by_sin();
 
 //	test_network_reverse();
 
@@ -55,6 +55,7 @@ int main()
 // //	test_network_by_numeric_prediction_1();
 
 	cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
+	getchar();
 	return 0;
 }
 

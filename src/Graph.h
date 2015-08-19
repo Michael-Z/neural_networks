@@ -39,21 +39,11 @@ private:
 	int32_t m_Max;
 };
 
-class Point
-{
-public:
-	Point( double x, double y) : m_X( x ), m_Y( y ){}
-	Point() : m_X( 0 ), m_Y( 0 ){}
-
-	double m_X;
-	double m_Y;
-};
-
 class Graph
 {
-public:
 	Graph( GtkWidget *window, uint32_t width, uint32_t height );
 	Graph( GtkWidget *window );
+public:
 	virtual ~Graph();
 
 	static Graph * getInstance( GtkWidget * window, uint32_t width, uint32_t height );
@@ -66,6 +56,8 @@ public:
 	uint32_t getHeight() const;
 
 	void addPoint( double x, double y );
+
+	void drawPoints();
 
 private:
 
@@ -98,7 +90,8 @@ private:
 	uint32_t m_ButtonPressCoord_X;
 	uint32_t m_ButtonPressCoord_Y;
 
-	std::vector<Point> m_Points;
+	std::vector<double> m_PointsX;
+	std::vector<double> m_PointsY;
 };
 
 #endif /* GRAPH_H_ */

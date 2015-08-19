@@ -32,7 +32,7 @@ void CLayerComputor::init( unsigned int neuronsCount )
 	size_t neurons_count = m_neurons.size();
 	for( size_t neuron_i = 0 ; neuron_i < neurons_count ; neuron_i++ )
 	{
-		m_neurons[neuron_i] = new CNeuronSigmoid();
+		m_neurons[neuron_i] = new CNeuronTanh();
 	}
 }
 

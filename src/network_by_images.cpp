@@ -154,6 +154,7 @@ static void epoch_cb(EpochState & epochState)
 	if( (epochState.index % 10) == 0 )
 	{
 		Graph::getInstance()->addPoint( epochState.index * 0.01, epochState.squareErrorSum );
+		Graph::getInstance()->drawPoints();
 		printf("epochIndex=%d\n", epochState.index);fflush(stdout);
 		string filename = "network_images.net";
 //		epochState.network->save( filename );

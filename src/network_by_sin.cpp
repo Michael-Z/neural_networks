@@ -15,6 +15,7 @@ using namespace std;
 
 static void getTestTrainData( TrainingData & data, int index, int size );
 static void dump( vector<double> & input );
+static void epoch_cb(EpochState & epochState);
 
 class Timer
 {
@@ -42,16 +43,16 @@ void train_network_by_sin()
 	const unsigned int input_count = 1;
 	const unsigned int output_count = 1;
 	vector<size_t> hiddenLayers;
-	hiddenLayers.push_back( 10 );
+	hiddenLayers.push_back( 3 );
 	CLayersConfiguration sequence( input_count, output_count, hiddenLayers );
 
-	CNetwork network( sequence, 1, 0.1 );
+	CNetwork network( sequence, 5, 0.1 );
 
 	string network_filename( "network_sin.net" );
 
 	vector<TrainingData> trainData_v;
 
-	const size_t traine_data_count = 1000;
+	const size_t traine_data_count = 100;
 
 	trainData_v.resize( traine_data_count, TrainingData() );
 
@@ -62,11 +63,13 @@ void train_network_by_sin()
 
 	double error_threshold = 1e-7;
 
+	network.setEpochStateCallback( epoch_cb );
+
 	double relativeErrorTrain = 0.0;
 	{
 		TIMER("train")
 
-		relativeErrorTrain = network.Learn( trainData_v, error_threshold, 1000 );
+		relativeErrorTrain = network.Learn( trainData_v, error_threshold, 1000000 );
 	}
 	printf( "relativeErrorTrain=%f\n", relativeErrorTrain ); fflush( stdout );
 	network.save( network_filename );
@@ -82,7 +85,7 @@ void test_network_by_sin()
 	string filename = "network_sin.net";
 	CNetwork network( filename );
 
-	const size_t traind_data_count = 40;
+	const size_t traind_data_count = 10;
 
 	for( unsigned int file_i = 0 ; file_i < traind_data_count ; file_i++ )
 	{
@@ -97,6 +100,20 @@ void test_network_by_sin()
 	}
 }
 
+#include "Graph.h"
+static void epoch_cb(EpochState & epochState)
+{
+	if( (epochState.index % 1000) == 0 )
+	{
+		printf("epochState.squareErrorSum=%.2f\n", epochState.squareErrorSum);fflush(stdout);
+		Graph::getInstance()->addPoint( epochState.index * 0.01, epochState.squareErrorSum );
+		Graph::getInstance()->drawPoints();
+		printf("epochIndex=%d\n", epochState.index);fflush(stdout);
+		string filename = "network_images.net";
+//		epochState.network->save( filename );
+//		test_network_by_images();
+	}
+}
 
 
 void getTestTrainData( TrainingData & data, int index, int size )
