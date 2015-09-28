@@ -32,7 +32,7 @@ void CLayerComputor::init( unsigned int neuronsCount )
 	size_t neurons_count = m_neurons.size();
 	for( size_t neuron_i = 0 ; neuron_i < neurons_count ; neuron_i++ )
 	{
-		m_neurons[neuron_i] = new CNeuronTanh();
+		m_neurons[neuron_i] = new CNeuronSigmoid();
 	}
 }
 
@@ -76,9 +76,18 @@ double CLayerComputor::applyErrors( vector<double> & expected )
 
 	double errorSum = 0.0;
 
+//	for( uint32_t neuron_i = 0 ; neuron_i < actualSize ; neuron_i++ )
+//	{
+//		double error = m_neurons[neuron_i]->getOutput() - expected[neuron_i];
+//		m_neurons[neuron_i]->setError( error );
+//
+//		errorSum += abs( error );
+//	}
 	for( uint32_t neuron_i = 0 ; neuron_i < actualSize ; neuron_i++ )
 	{
-		double error = m_neurons[neuron_i]->getOutput() - expected[neuron_i];
+		double expect = expected[neuron_i];
+		double output = m_neurons[neuron_i]->getOutput();
+		double error = ( 1.0 ) * expect * log2( output ) - ( 1.0 - expect ) * log2( 1.0 - output );
 		m_neurons[neuron_i]->setError( error );
 
 		errorSum += abs( error );

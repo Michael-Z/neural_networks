@@ -85,6 +85,8 @@ void		gs_graph_set_tick_length (GsGraph *graph, guint tick_length);
 
 void		gs_graph_attach_plot (GsGraph *graph, GsPlot *plot);
 
+void		gs_graph_detach_plot (GsGraph *graph, GsPlot *plot);
+
 
 G_END_DECLS
 

@@ -15,6 +15,10 @@
 #include <vector>
 #include <stdint.h>
 
+#include "gsgraph/gs-graph.h"
+#include "gsgraph/gs-function-plot.h"
+#include "gsgraph/gs-dataset-plot.h"
+
 typedef enum
 {
 	direction_left = 0,
@@ -56,8 +60,8 @@ public:
 	uint32_t getHeight() const;
 
 	void addPoint( double x, double y );
-
 	void drawPoints();
+	void clearPoints();
 
 private:
 
@@ -69,6 +73,8 @@ private:
 	static gboolean on_button_release_event( GtkWidget *widget, GdkEventButton *event, gpointer user_data );
 
 private:
+
+	GsPlot * m_Plot;
 
 	static Graph * m_Instance;
 

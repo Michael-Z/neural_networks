@@ -13,6 +13,7 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
+#include <numeric>
 
 #define BIASOUTPUT 1   //output for bias. It's always 1.
 
@@ -140,10 +141,55 @@ double CNetwork::forward( vector<double> & inputData, vector<double> & outputDat
 //		sum_square_error += ( error*error );
 //	}
 
-	double mean_square_error = sum_square_error / last_layer->getNeuronsCount();
+	double mean_square_error = sum_square_error / (double)last_layer->getNeuronsCount();
 
 	return mean_square_error;
 
+}
+
+//vector<double> findLocalMin( vector<double> & /*in out*/ vars, uint32_t varIndex, funcGrad_t funcGrad, uint32_t & iterationCount )
+//{
+//	double learningRateAccuracy = 1e-7;
+//	double derivativeAccuracy = 1e-7;
+//	vector<double> oldFuncDerivatives = funcGrad( vars );
+//	double oldFuncVarDerivative = oldFuncDerivatives[varIndex];
+//
+//	double learningRate = 1;
+//	iterationCount = 0;
+//	do
+//	{
+//		double funcAntiGradValue = ( -1 ) * oldFuncVarDerivative;
+//
+//		vars[varIndex] = vars[varIndex] + funcAntiGradValue * learningRate;
+//		vector<double> newFuncDerivates = funcGrad( vars );
+//		double newFuncVarDerivate = newFuncDerivates[varIndex];
+//
+//		if( newFuncVarDerivate * oldFuncVarDerivative < 0 )
+//		{
+//			learningRate /= 3.0;
+//		}
+//		else
+//		{
+//			learningRate *= 1.5;
+//		}
+//
+//		bool exitCondition = learningRate < learningRateAccuracy || abs( newFuncVarDerivate ) < derivativeAccuracy;
+//		if( true == exitCondition )
+//		{
+//			break;
+//		}
+//
+//		oldFuncVarDerivative = newFuncVarDerivate;
+//		iterationCount++;
+//
+//	}while( true );
+//
+//	return vars;
+//}
+
+double getGradientsSum( vector<double> & varsDerivatives )
+{
+	return std::accumulate( varsDerivatives.begin(), varsDerivatives.end(), 0.0 );
 }
 
 void CNetwork::backpropagation2()
@@ -153,64 +199,25 @@ void CNetwork::backpropagation2()
 
 	size_t layers_count = layers.size();
 
-	size_t layer_i = layers_count - 1;
-
-	do
+//	do
 	{
-		ILayer * right_layer = layers[layer_i];
-		ILayer * left_layer = layers[layer_i - 1];
-		size_t right_layer_neurons_count = right_layer->getNeuronsCount();
-		size_t left_layer_neurons_count = left_layer->getNeuronsCount();
+		size_t layer_i = layers_count - 1;
 
-		//Update bias weights
-		for( size_t right_neuron_i = 0 ; right_neuron_i < right_layer_neurons_count ; right_neuron_i++ )
+		do
 		{
-			INeuron * right_layer_neuron = right_layer->getNeuron( right_neuron_i );
-			double errorDerivative = 0;
-			if( layer_i == layers_count - 1 )
-			{
-				errorDerivative = ( 2 * right_layer_neuron->getError() );//dDk/dyi = d((y1 - a1)^2 + (y2 - a2)^2 + ... + (yn - an)^2)
-			}
-			else
-			{
-				errorDerivative = right_layer_neuron->getError();
-			}
+			ILayer * right_layer = layers[layer_i];
+			ILayer * left_layer = layers[layer_i - 1];
+			size_t right_layer_neurons_count = right_layer->getNeuronsCount();
+			size_t left_layer_neurons_count = left_layer->getNeuronsCount();
 
-
-			double right_output = right_layer_neuron->getOutput();
-			double outputDerivative = right_layer_neuron->calculateDerivative( right_output );//dF'(Si)
-
-			double weightGradient = errorDerivative * outputDerivative * BIASOUTPUT;
-
-			double oldGradient = right_layer_neuron->getWeights()[0].gradient();
-
-			if( ( weightGradient + oldGradient ) < weightGradient )//different sign
-			{
-				double oldLearningRate = right_layer_neuron->getWeights()[0].learningRate();
-				double newLearningRate = oldLearningRate / 10.0;
-				right_layer_neuron->getWeights()[0].learningRate( newLearningRate );
-			}
-
-			//Bias
-			double oldWeight = right_layer_neuron->getWeights()[0].value();
-			double newWeight = oldWeight + ( -1 ) * right_layer_neuron->getWeights()[0].learningRate() * weightGradient;// + oldGradient * m_MomentRate;
-
-			right_layer_neuron->getWeights()[0].value( newWeight );
-
-			right_layer_neuron->getWeights()[0].gradient( weightGradient );
-		}
-
-		//Update recent neurons
-		for( size_t left_neuron_i = 0 ; left_neuron_i < left_layer_neurons_count ; left_neuron_i++ )
-		{
-			double errorGradient = 0.0;
+			//Update bias weights
 			for( size_t right_neuron_i = 0 ; right_neuron_i < right_layer_neurons_count ; right_neuron_i++ )
 			{
 				INeuron * right_layer_neuron = right_layer->getNeuron( right_neuron_i );
 				double errorDerivative = 0;
-				if( layer_i == ( layers_count - 1 ) )
+				if( layer_i == layers_count - 1 )
 				{
-					errorDerivative = ( 2 * right_layer_neuron->getError() );//dDk/dyi = d((y1 - a1)^2 + (y2 - a2)^2 + ... + (yn - an)^2)
+					errorDerivative = ( right_layer_neuron->getError() );//dDk/dyi = d((y1 - a1)^2 + (y2 - a2)^2 + ... + (yn - an)^2)
 				}
 				else
 				{
@@ -221,53 +228,103 @@ void CNetwork::backpropagation2()
 				double right_output = right_layer_neuron->getOutput();
 				double outputDerivative = right_layer_neuron->calculateDerivative( right_output );//dF'(Si)
 
-				double left_output = left_layer->getNeuron( left_neuron_i )->getOutput();
+				double weightGradient = errorDerivative * outputDerivative * BIASOUTPUT;
 
-				double weightGradient = errorDerivative * outputDerivative * left_output;
-				double oldGradient = right_layer_neuron->getWeights()[left_neuron_i + 1].gradient();
+				double oldGradient = right_layer_neuron->getWeights()[0].gradient();
 
-				if( weightGradient * oldGradient < 0 )//different sign
+				if( ( weightGradient + oldGradient ) < weightGradient )//different sign
 				{
-					double oldLearningRate = right_layer_neuron->getWeights()[left_neuron_i + 1].learningRate();
-					double newLearningRate = oldLearningRate * 0.999995;
-					right_layer_neuron->getWeights()[left_neuron_i + 1].learningRate( newLearningRate );
-				}
-				else//the same sign
-				{
-					double oldLearningRate = right_layer_neuron->getWeights()[left_neuron_i + 1].learningRate();
-					double newLearningRate = oldLearningRate + 0.000005;
-					right_layer_neuron->getWeights()[left_neuron_i + 1].learningRate( newLearningRate );
+					double oldLearningRate = right_layer_neuron->getWeights()[0].learningRate();
+					double newLearningRate = oldLearningRate / 10.0;
+					right_layer_neuron->getWeights()[0].learningRate( newLearningRate );
 				}
 
-				double oldWeight = right_layer_neuron->getWeights()[left_neuron_i + 1].value();
+				//Bias
+				double oldWeight = right_layer_neuron->getWeights()[0].value();
+				double newWeight = oldWeight + ( -1 ) * right_layer_neuron->getWeights()[0].learningRate() * weightGradient;// + oldGradient * m_MomentRate;
 
-				double newWeight = oldWeight + ( -1 ) * right_layer_neuron->getWeights()[left_neuron_i + 1].learningRate() * weightGradient + oldGradient * m_MomentRate;
-				right_layer_neuron->getWeights()[left_neuron_i + 1].value( newWeight );
+				right_layer_neuron->getWeights()[0].value( newWeight );
 
-				right_layer_neuron->getWeights()[left_neuron_i + 1].gradient( weightGradient );
-
-
-				errorGradient += errorDerivative * outputDerivative * oldWeight;//(Dk/dyi)*(dyi/dxj) = 2(y - a)*F'(Si)*Wi
+				right_layer_neuron->getWeights()[0].gradient( weightGradient );
 			}
 
-			//propagate error
-			left_layer->getNeuron( left_neuron_i )->setError( errorGradient );
-		}
+			//Update recent neurons
+			for( size_t left_neuron_i = 0 ; left_neuron_i < left_layer_neurons_count ; left_neuron_i++ )
+			{
+				double errorGradient = 0.0;
+				for( size_t right_neuron_i = 0 ; right_neuron_i < right_layer_neurons_count ; right_neuron_i++ )
+				{
+					INeuron * right_layer_neuron = right_layer->getNeuron( right_neuron_i );
+					double errorDerivative = 0;
+					if( layer_i == ( layers_count - 1 ) )
+					{
+						errorDerivative = ( right_layer_neuron->getError() );//dDk/dyi = d((y1 - a1)^2 + (y2 - a2)^2 + ... + (yn - an)^2)
+					}
+					else
+					{
+						errorDerivative = right_layer_neuron->getError();
+					}
 
-		layer_i--;
-	}while( layer_i > 0 );
+
+					double right_output = right_layer_neuron->getOutput();
+					double outputDerivative = right_layer_neuron->calculateDerivative( right_output );//dF'(Si)
+
+					double left_output = left_layer->getNeuron( left_neuron_i )->getOutput();
+
+					double weightGradient = errorDerivative * outputDerivative * left_output;
+					double oldGradient = right_layer_neuron->getWeights()[left_neuron_i + 1].gradient();
+
+					if( weightGradient * oldGradient < 0 )//different sign
+					{
+						double oldLearningRate = right_layer_neuron->getWeights()[left_neuron_i + 1].learningRate();
+						double newLearningRate = oldLearningRate * 0.95;
+						right_layer_neuron->getWeights()[left_neuron_i + 1].learningRate( newLearningRate );
+					}
+					else//the same sign
+					{
+						double oldLearningRate = right_layer_neuron->getWeights()[left_neuron_i + 1].learningRate();
+						double newLearningRate = oldLearningRate + .05;
+						right_layer_neuron->getWeights()[left_neuron_i + 1].learningRate( newLearningRate );
+					}
+
+					double oldWeight = right_layer_neuron->getWeights()[left_neuron_i + 1].value();
+
+					double newWeight = oldWeight + ( -1 ) * right_layer_neuron->getWeights()[left_neuron_i + 1].learningRate() * weightGradient + oldGradient * m_MomentRate;
+					right_layer_neuron->getWeights()[left_neuron_i + 1].value( newWeight );
+
+					right_layer_neuron->getWeights()[left_neuron_i + 1].gradient( weightGradient );
+
+
+					errorGradient += errorDerivative * outputDerivative * oldWeight;//(Dk/dyi)*(dyi/dxj) = 2(y - a)*F'(Si)*Wi
+				}
+
+				//propagate error
+				left_layer->getNeuron( left_neuron_i )->setError( errorGradient );
+			}
+
+			layer_i--;
+		}while( layer_i > 0 );
+
+//		bool exitCondition = learningRate < learningRateAccuracy || abs( newFuncVarDerivate ) < derivativeAccuracy;
+//		if( true == exitCondition )
+//		{
+//			break;
+//		}
+
+	}
+//	while( true );
 }
 
 //*************************calculate error average*************//
+static double errorSquareSum = 0.0;
+void sum ( double & error )
+{
+	errorSquareSum += error;
+}
 
 double getRelativeError( vector<double> errors, unsigned int valueable_size )
 {
-	double errorSquareSum = 0.0;
-	std::for_each( errors.begin(), errors.begin() + valueable_size,
-																	 [ & ] ( double & error )
-																	 {
-																		errorSquareSum += error;
-																	 });
+	std::for_each( errors.begin(), errors.begin() + valueable_size, sum );
 	double errorSquareSumMean = errorSquareSum/valueable_size;
 	return errorSquareSumMean;
 }
@@ -292,6 +349,7 @@ double CNetwork::Learn( vector<TrainingData> & trainData, double error_threshold
 				backpropagation2();
 			}
 		}
+
 		if( m_epochStateCallback )
 		{
 			epochState.squareErrorSum = meanSquareErrorSum;

@@ -9,7 +9,6 @@
 #include <cstdio>
 #include <ctime>
 #include <iostream>
-#include <thread>
 
 #include "Window.h"
 
@@ -49,7 +48,7 @@ void train_network_by_images()
 	const unsigned int output_count = 26;
 	const unsigned int input_count = width * height;
 	vector<size_t> hiddenLayers;
-	hiddenLayers.push_back( input_count / 2 );
+//	hiddenLayers.push_back( input_count / 2 );
 	CLayersConfiguration sequence( input_count, output_count, hiddenLayers );
 
 	CNetwork network( sequence, 10, 0.1 );
@@ -151,14 +150,14 @@ void test_network_by_images()
 #include "Graph.h"
 static void epoch_cb(EpochState & epochState)
 {
-	if( (epochState.index % 10) == 0 )
+	if( (epochState.index % 1) == 0 )
 	{
 		Graph::getInstance()->addPoint( epochState.index * 0.01, epochState.squareErrorSum );
 		Graph::getInstance()->drawPoints();
 		printf("epochIndex=%d\n", epochState.index);fflush(stdout);
 		string filename = "network_images.net";
-//		epochState.network->save( filename );
-//		test_network_by_images();
+		epochState.network->save( filename );
+		test_network_by_images();
 	}
 }
 

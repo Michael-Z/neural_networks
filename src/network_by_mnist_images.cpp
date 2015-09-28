@@ -5,7 +5,7 @@
  *      Author: vostanin
  */
 
-#include "network_by_images.h"
+#include "network_by_mnist_images.h"
 #include <cstdio>
 #include <sstream>
 #include <dirent.h>
@@ -14,12 +14,13 @@ static void getInputResolution( size_t & width, size_t & height );
 static void getInputData( vector<vector<double> > & data, int label );
 static void getInputData( vector<double> & data, const char * file_format );
 static void dump( vector<double> & input, unsigned int items_per_line  );
+static void epoch_cb(EpochState & epochState);
 
 void train_network_by_mnist_images()
 {
 	size_t width = 0, height = 0;
 	getInputResolution( width, height );
-	const unsigned int output_count = 10;
+	const unsigned int output_count = 2;
 	const unsigned int input_count = width * height;
 	vector<size_t> hiddenLayers;
 	hiddenLayers.push_back( input_count / 2 );
@@ -27,11 +28,13 @@ void train_network_by_mnist_images()
 
 	CNetwork network( sequence, 1, 0.1 );
 
+	network.setEpochStateCallback( epoch_cb );
+
 	string network_filename( "network_mnist_images.net" );
 
 	vector<TrainingData> trainData_v;
 
-	for( unsigned int label_i = 0 ; label_i < output_count ; label_i++ )
+	for( unsigned int label_i = 0 ; label_i < 2 ; label_i++ )
 	{
 		vector<vector<double> > all_input_data;
 		getInputData( all_input_data, label_i );
@@ -86,9 +89,23 @@ void train_network_by_mnist_images()
 	}
 }
 
+#include "Graph.h"
+static void epoch_cb(EpochState & epochState)
+{
+	if( (epochState.index % 1) == 0 )
+	{
+		Graph::getInstance()->addPoint( epochState.index * 0.01, epochState.squareErrorSum );
+		Graph::getInstance()->drawPoints();
+		printf("epochIndex=%d\n", epochState.index);fflush(stdout);
+		string filename = "network_mnist_images.net";
+		epochState.network->save( filename );
+		test_network_by_mnist_images();
+	}
+}
+
 void test_network_by_mnist_images()
 {
-	const unsigned int output_count = 10;
+	const unsigned int output_count = 2;
 
 	string filename = "network_mnist_images.net";
 	CNetwork network( filename );
@@ -105,7 +122,7 @@ void test_network_by_mnist_images()
 		for( size_t image_i = 0 ; image_i < inputData_v_count ; image_i++ )
 		{
 			double relativeErrorTest = network.Test( inputData_v[image_i], output_test );
-			dump( output_test, 72 );
+//			dump( output_test, 72 );
 			size_t max_index = 0;
 			double max_value = 0.0;
 			for( size_t output_i = 0 ; output_i < output_test.size() ; output_i++ )
@@ -116,7 +133,7 @@ void test_network_by_mnist_images()
 					max_index = output_i;
 				}
 			}
-			printf( "relativeErrorTest=%f, image_index=%d\n", relativeErrorTest, (int)max_index ); fflush( stdout );
+			printf( "image_index=%d expected=%d, maxvalue=%f\n", (int)max_index, label_i, max_value ); fflush( stdout );
 		}
 	}
 }

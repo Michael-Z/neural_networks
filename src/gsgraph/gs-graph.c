@@ -36,9 +36,6 @@ G_DEFINE_TYPE (GsGraph, gs_graph, GTK_TYPE_DRAWING_AREA);
 
 #define ZOOM_FACTOR 1.1
 
-#define MAX_VIEW_WIDTH 100
-#define MAX_VIEW_HEIGHT 100
-
 #define EVENT_MASK (GDK_BUTTON1_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_SCROLL_MASK | GDK_KEY_PRESS_MASK)
 
 enum {
@@ -738,4 +735,15 @@ gs_graph_attach_plot (GsGraph *graph, GsPlot *plot)
 	gtk_widget_queue_draw (GTK_WIDGET (graph));
 
 	g_signal_emit_by_name (graph, "plot-attached", plot);
+}
+
+void
+gs_graph_detach_plot (GsGraph *graph, GsPlot *plot)
+{
+	g_return_if_fail (GS_IS_GRAPH (graph));
+	g_return_if_fail (GS_IS_PLOT (plot));
+
+	graph->priv->plots = g_list_remove (graph->priv->plots, plot);
+
+	gtk_widget_queue_draw (GTK_WIDGET (graph));
 }
