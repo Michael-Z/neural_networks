@@ -7,10 +7,11 @@
 
 #include "CLayerInput.h"
 #include "CNeuronData.h"
+#include "CNeuronFactory.h"
 
-CLayerInput::CLayerInput( unsigned int neuronsCount )
+CLayerInput::CLayerInput( unsigned int neuronsCount, NeuronType neuronType )
 {
-	init( neuronsCount );
+	init( neuronsCount, neuronType );
 }
 
 CLayerInput::~CLayerInput()
@@ -22,13 +23,13 @@ CLayerInput::~CLayerInput()
 	}
 }
 
-void CLayerInput::init( unsigned int neuronsCount )
+void CLayerInput::init( unsigned int neuronsCount, NeuronType neuronType )
 {
 	m_neurons.resize( neuronsCount );
 	size_t neurons_count = m_neurons.size();
 	for( size_t neuron_i = 0 ; neuron_i < neurons_count ; neuron_i++ )
 	{
-		m_neurons[neuron_i] = new CNeuronData();
+		m_neurons[neuron_i] = CNeuronFactory::Instance().createNeuron( NEURON_DATA );
 	}
 }
 

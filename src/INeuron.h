@@ -12,6 +12,12 @@
 #include "Weight.h"
 using namespace std;
 
+typedef enum
+{
+	NEURON_DATA,
+	NEURON_SIGMOID
+}NeuronType;
+
 class INeuron
 {
 public:

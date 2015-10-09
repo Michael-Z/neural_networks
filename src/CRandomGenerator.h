@@ -19,7 +19,8 @@ public:
 	~CRandomGenerator();
 
 	double getValue();
-	void fillVector( vector<Weight> & values );
+	void fillVector( std::vector<Weight> & values );
+	void fillVector( std::vector<double> & values );
 private:
 	double m_Low;
 	double m_High;

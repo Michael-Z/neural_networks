@@ -20,7 +20,7 @@ void train_network_by_mnist_images()
 {
 	size_t width = 0, height = 0;
 	getInputResolution( width, height );
-	const unsigned int output_count = 2;
+	const unsigned int output_count = 10;
 	const unsigned int input_count = width * height;
 	vector<size_t> hiddenLayers;
 	hiddenLayers.push_back( input_count / 2 );
@@ -34,7 +34,7 @@ void train_network_by_mnist_images()
 
 	vector<TrainingData> trainData_v;
 
-	for( unsigned int label_i = 0 ; label_i < 2 ; label_i++ )
+	for( unsigned int label_i = 0 ; label_i < output_count ; label_i++ )
 	{
 		vector<vector<double> > all_input_data;
 		getInputData( all_input_data, label_i );
@@ -73,7 +73,7 @@ void train_network_by_mnist_images()
 		for( size_t image_i = 0 ; image_i < inputData_v_count ; image_i++ )
 		{
 			double relativeErrorTest = network.Test( inputData_v[image_i], output_test );
-			dump( output_test, 72 );
+//			dump( output_test, 72 );
 			size_t max_index = 0;
 			double max_value = 0.0;
 			for( size_t output_i = 0 ; output_i < output_test.size() ; output_i++ )
@@ -94,7 +94,7 @@ static void epoch_cb(EpochState & epochState)
 {
 	if( (epochState.index % 1) == 0 )
 	{
-		Graph::getInstance()->addPoint( epochState.index * 0.01, epochState.squareErrorSum );
+		Graph::getInstance()->addPoint( epochState.index * 0.1, epochState.squareErrorSum );
 		Graph::getInstance()->drawPoints();
 		printf("epochIndex=%d\n", epochState.index);fflush(stdout);
 		string filename = "network_mnist_images.net";
@@ -105,7 +105,7 @@ static void epoch_cb(EpochState & epochState)
 
 void test_network_by_mnist_images()
 {
-	const unsigned int output_count = 2;
+	const unsigned int output_count = 10;
 
 	string filename = "network_mnist_images.net";
 	CNetwork network( filename );

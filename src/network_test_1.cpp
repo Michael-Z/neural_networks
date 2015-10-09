@@ -44,13 +44,12 @@ int main()
 	pthread_create( &id, NULL, graph_tread, NULL );
 	sleep( 1 );
 
-	train_network_by_mnist_images();
-	test_network_by_mnist_images();
+//	train_network_by_mnist_images();
+//	test_network_by_mnist_images();
 
 //	train_network_by_images();
-//	test_network_by_images();
 
-//	train_network_by_and();
+	train_network_by_and();
 //	test_network_by_and();
 
 //	train_network_by_sin();

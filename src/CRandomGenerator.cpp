@@ -32,6 +32,16 @@ void CRandomGenerator::fillVector( vector<Weight> & values )
 
 	for( size_t value_i = 0 ; value_i < values_count ; value_i++ )
 	{
-		values[value_i].value( getValue() );
+		values[value_i].value( /*getValue()*/ 0.5 );
+	}
+}
+
+void CRandomGenerator::fillVector( std::vector<double> & values )
+{
+	size_t values_count = values.size();
+
+	for( size_t value_i = 0 ; value_i < values_count ; value_i++ )
+	{
+		values[value_i] = getValue();
 	}
 }

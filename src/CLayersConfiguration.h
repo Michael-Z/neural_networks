@@ -8,20 +8,22 @@
 #ifndef CLayersConfiguration_H_
 #define CLayersConfiguration_H_
 
-#include "CLayerComputor.h"
+#include "CLayerMatrix.h"
 #include <vector>
-using namespace std;
 
 class CLayersConfiguration
 {
 public:
 	CLayersConfiguration( unsigned int inputNeuronsCount, unsigned int outputNeuronsCount, vector<size_t> & hiddenLayers );
+	CLayersConfiguration( vector<size_t> & layers );
 	~CLayersConfiguration();
 
 	CLayersConfiguration & getLayers( vector<ILayer*> & layers );
+	CLayersConfiguration & getLayers( vector<CLayerMatrix*> & layers );
 
 private:
 	vector<ILayer*> m_layers;
+	vector<CLayerMatrix*> m_layersMatrix;
 };
 
 #endif /* CLayersConfiguration_H_ */

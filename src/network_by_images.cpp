@@ -17,6 +17,8 @@ static void getInputData( vector<double> & data, const char * file_format, int i
 static void dump( vector<double> & input, unsigned int items_per_line  );
 static void epoch_cb(EpochState & epochState);
 
+static CNetwork * network;
+
 
 class Timer
 {
@@ -51,7 +53,12 @@ void train_network_by_images()
 //	hiddenLayers.push_back( input_count / 2 );
 	CLayersConfiguration sequence( input_count, output_count, hiddenLayers );
 
-	CNetwork network( sequence, 10, 0.1 );
+	vector<size_t> layers;
+	layers.push_back( input_count );
+	layers.push_back( output_count );
+	CLayersConfiguration sequence2( layers );
+
+	network = new CNetwork( sequence2, 10, 0.1 );
 
 	string network_filename( "network_images.net" );
 
@@ -68,49 +75,20 @@ void train_network_by_images()
 		trainData_v[file_i].output[file_i] = 1;
 	}
 
-	double error_threshold = 1e-5;
+	double error_threshold = 1e-50;
 
-	network.setEpochStateCallback( epoch_cb );
+	network->setEpochStateCallback( epoch_cb );
 
 	double relativeErrorTrain = 0.0;
 	{
 		TIMER("train")
 
-		relativeErrorTrain = network.Learn( trainData_v, error_threshold, 1000 );
+//		relativeErrorTrain = network->Learn( trainData_v, error_threshold, 1000 );
+		relativeErrorTrain = network->LearnLBFGS( trainData_v, error_threshold, 1000 );
 	}
 	printf( "relativeErrorTrain=%f\n", relativeErrorTrain ); fflush( stdout );
 
-	network.save( network_filename );
-
-	vector<double> test_input;
-	getInputData( test_input, "./train_img/fangtasia-upper_%d.png_copy.png", 0 );
-
-
-	vector<double> output_test;
-	double relativeErrorTest = network.Test( test_input, output_test );
-//	dump( output_test, 72 );
-	printf( "relativeErrorTest=%f\n", relativeErrorTest ); fflush( stdout );
-
-	for( unsigned int file_i = 0 ; file_i < output_count ; file_i++ )
-	{
-		getInputData( test_input, "./train_img/fangtasia-upper_%d.png_copy.png", file_i );
-
-		vector<double> output_test;
-		double relativeErrorTest = network.Test( test_input, output_test );
-//		dump( output_test, 72 );
-		size_t max_index = 0;
-		double max_value = 0.0;
-		for( size_t output_i = 0 ; output_i < output_test.size() ; output_i++ )
-		{
-			if( max_value < output_test[output_i] )
-			{
-				max_value = output_test[output_i];
-				max_index = output_i;
-			}
-		}
-
-		printf( "relativeErrorTest=%f, image_index=%d\n", relativeErrorTest, (int)max_index ); fflush( stdout );
-	}
+//	network->save( network_filename );
 }
 
 void test_network_by_images()
@@ -121,8 +99,6 @@ void test_network_by_images()
 
 	string filename = "network_images.net";
 
-	CNetwork network( filename );
-
 	for( unsigned int file_i = 0 ; file_i < output_count ; file_i++ )
 	{
 		vector<double> test_input;
@@ -131,7 +107,7 @@ void test_network_by_images()
 //		dump( test_input, 72 );
 
 		vector<double> output_test;
-		double relativeErrorTest = network.Test( test_input, output_test );
+		double relativeErrorTest = network->Test( test_input, output_test, 0 );
 //		dump( output_test, 72 );
 		size_t max_index = 0;
 		double max_value = 0.0;
@@ -150,11 +126,12 @@ void test_network_by_images()
 #include "Graph.h"
 static void epoch_cb(EpochState & epochState)
 {
-	if( (epochState.index % 1) == 0 )
+	if( (epochState.index % 10) == 0 )
 	{
-		Graph::getInstance()->addPoint( epochState.index * 0.01, epochState.squareErrorSum );
-		Graph::getInstance()->drawPoints();
 		printf("epochIndex=%d\n", epochState.index);fflush(stdout);
+		Graph::getInstance()->addPoint( epochState.index * 0.1, epochState.squareErrorSum );
+		Graph::getInstance()->drawPoints();
+
 		string filename = "network_images.net";
 		epochState.network->save( filename );
 		test_network_by_images();
@@ -168,9 +145,10 @@ void getInputResolution( size_t & width, size_t & height )
 {
 	width = 0;
 	height = 0;
-	const char * file_name = "./train_img/fangtasia-upper_0.png_copy.png";
+	const char * file_name = "./train_img/fangtasia-upper_1.png_copy.png";
 
-	ifstream png_file( file_name );
+	ifstream png_file;
+	png_file.open( file_name );
 	if( true == png_file.is_open() )
 	{
 		png::reader<ifstream> reader(png_file);

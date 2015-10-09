@@ -13,6 +13,9 @@ using namespace std;
 
 static void getTestTrainData( TrainingData & data, int index );
 static void dump( vector<double> & input );
+static void epoch_cb(EpochState & epochState);
+
+static CNetwork * network;
 
 class Timer
 {
@@ -39,11 +42,16 @@ void train_network_by_and()
 {
 	const unsigned int input_count = 2;
 	const unsigned int output_count = 1;
-	vector<size_t> hiddenLayers;
-	hiddenLayers.push_back( 4 );
-	CLayersConfiguration sequence( input_count, output_count, hiddenLayers );
+	vector<size_t> layers;
+	{
+		layers.push_back( input_count );
+//		layers.push_back( 1 );
+		layers.push_back( output_count );
+	}
+	CLayersConfiguration sequence( layers );
+//	CLayersConfiguration sequence( input_count, output_count, layers );
 
-	CNetwork network( sequence, 1, 0.1 );
+	network = new CNetwork( sequence, 1, 0.1 );
 
 	string network_filename( "network_and.net" );
 
@@ -60,14 +68,16 @@ void train_network_by_and()
 
 	double error_threshold = 1e-7;
 
+	network->setEpochStateCallback( epoch_cb );
+
 	double relativeErrorTrain = 0.0;
 	{
 		TIMER("train")
 
-		relativeErrorTrain = network.Learn( trainData_v, error_threshold, 1000000 );
+		relativeErrorTrain = network->LearnLBFGS( trainData_v, error_threshold, 1000000 );
 	}
 	printf( "relativeErrorTrain=%f\n", relativeErrorTrain ); fflush( stdout );
-	network.save( network_filename );
+//	network->save( network_filename );
 
 	for( unsigned int file_i = 0 ; file_i < traind_data_count ; file_i++ )
 	{
@@ -75,7 +85,7 @@ void train_network_by_and()
 		getTestTrainData( test_input, file_i );
 
 		vector<double> output_test;
-		double relativeErrorTest = network.Test( test_input.input, output_test );
+		double relativeErrorTest = network->Test( test_input.input, output_test, 0 );
 		dump( output_test );
 		double max_value = 0.0;
 		for( size_t output_i = 0 ; output_i < output_test.size() ; output_i++ )
@@ -90,6 +100,22 @@ void train_network_by_and()
 	}
 }
 
+#include "Graph.h"
+static void epoch_cb(EpochState & epochState)
+{
+	const uint32_t div = 100;
+	if( (epochState.index % div ) == 0 )
+	{
+		printf("epochIndex=%d\n", epochState.index);fflush(stdout);
+		Graph::getInstance()->addPoint( epochState.index / (double)div, epochState.squareErrorSum );
+		Graph::getInstance()->drawPoints();
+
+		string filename = "network_images.net";
+		epochState.network->save( filename );
+		test_network_by_and();
+	}
+}
+
 void test_network_by_and()
 {
 	const unsigned int input_count = 2;
@@ -98,7 +124,7 @@ void test_network_by_and()
 	CLayersConfiguration sequence( input_count, output_count, hiddenLayers );
 
 	string filename = "network_and.net";
-	CNetwork network( filename );
+//	CNetwork network( filename );
 
 	const size_t traind_data_count = 4;
 
@@ -108,8 +134,8 @@ void test_network_by_and()
 		getTestTrainData( test_input, file_i );
 
 		vector<double> output_test;
-		network.Test( test_input.input, output_test );
-		dump( output_test );
+		network->Test( test_input.input, output_test, 0 );
+//		dump( output_test );
 		double max_value = 0.0;
 
 		printf( "out=%f\n", output_test[0] ); fflush( stdout );
@@ -120,7 +146,7 @@ void test_network_by_and()
 
 void getTestTrainData( TrainingData & data, int index )
 {
-	static int all_input_data[][3] = { {0, 0, 0}, {0, 1, 0}, {1, 0, 0}, {1, 1, 1} };
+	static double all_input_data[][3] = { {0.0, 0.0, 0.0}, {0.0, 0.99, 0.0}, {0.99, 0.0, 0.0}, {0.99, 0.99, 0.99} };
 //	static int all_input_data[][3] = { {-1, -1, 0}, {-1, 1, 0}, {1, -1, 0}, {1, 1, 1} };
 
 	data.input.resize( 2, 0 );
@@ -133,6 +159,7 @@ void getTestTrainData( TrainingData & data, int index )
 void getReverseTestTrainData( TrainingData & data, int index )
 {
 	static int all_input_data[][3] = { {0, 0, 0}, {0, 1, 0}, {1, 0, 0}, {1, 1, 1} };
+
 
 	data.input.resize( 1, 0 );
 	data.input[0] = all_input_data[index][2];
